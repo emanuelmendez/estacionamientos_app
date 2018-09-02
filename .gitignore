@@ -41,4 +41,4 @@ obj/
 /build
 /captures
 .externalNativeBuild
-/.idea/*
+/.idea/*.idea
