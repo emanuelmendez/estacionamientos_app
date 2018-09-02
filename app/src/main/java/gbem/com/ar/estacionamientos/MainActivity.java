@@ -55,7 +55,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void callAPI() {
-        // esta siendo sincronico, por eso en EstacionamientosApp se tuvo que poner el thread policy
+        // esta siendo sincronico, por eso en el onCreate se tuvo que poner el thread policy
         final Call<ResponseBody> stringCall = service.getDBStringObjects();
         try {
             final Response<ResponseBody> response = stringCall.execute();
