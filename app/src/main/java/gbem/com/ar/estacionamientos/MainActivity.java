@@ -23,7 +23,7 @@ import retrofit2.converter.gson.GsonConverterFactory;
 
 public class MainActivity extends AppCompatActivity {
 
-    private static final String LOCALHOST_API = "http://192.168.0.17:8080/web/";
+    private static final String LOCALHOST_API = "http://10.0.2.2:8080/web/";
     private static final String TAG = "EST_APP";
     @BindView(R.id.testButton)
     Button testButton;
