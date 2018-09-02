@@ -59,13 +59,14 @@ public class MainActivity extends AppCompatActivity {
         final Call<ResponseBody> stringCall = service.getDBStringObjects();
         try {
             final Response<ResponseBody> response = stringCall.execute();
+            Log.d(TAG, "Status code:" + response.code());
             if (response.isSuccessful()) {
                 txtResult.setText(response.body().string());
             } else {
                 txtResult.setText("Error: " + response.message());
             }
         } catch (IOException e) {
-            Log.e(TAG, e.getMessage(), e);
+            Log.e(TAG, e.getMessage());
             txtResult.setText("Error IO al realizar el llamado, ver log");
         }
     }
