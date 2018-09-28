@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:showIn="navigation_view">
+
+    <group android:checkableBehavior="single">
+        <item
+            android:id="@+id/nav_search_parking"
+            android:icon="@drawable/ic_search"
+            android:title="Buscar estacionamiento" />
+        <item
+            android:id="@+id/nav_vehicle_admin"
+            android:icon="@drawable/ic_car_admin"
+            android:title="Administrar vehículos" />
+        <item
+            android:id="@+id/nav_add_credit"
+            android:icon="@drawable/ic_credit_card"
+            android:title="Agregar crédito" />
+        <item
+            android:id="@+id/nav_record"
+            android:icon="@drawable/ic_user_record"
+            android:title="Historial" />
+        <item
+            android:id="@+id/nav_user_rep"
+            android:icon="@drawable/ic_grade_star"
+            android:title="Ver reputación como usuario" />
+    </group>
+
+    <item android:title="Opciones como Prestador">
+        <menu>
+            <item
+                android:id="@+id/nav_reservation_admin"
+                android:icon="@drawable/ic_reservation"
+                android:title="Administrar reservas" />
+            <item
+                android:id="@+id/nav_parking_admin"
+                android:icon="@drawable/ic_parking"
+                android:title="Administrar estacionamientos" />
+            <item
+                android:id="@+id/nav_lender_rep"
+                android:icon="@drawable/ic_lender_rep"
+                android:title="Ver reputación como prestador" />
+        </menu>
+    </item>
+
+</menu>

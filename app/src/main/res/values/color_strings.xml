@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="colors_array">
+        <item>Amarillo</item>
+        <item>Azul oscuro</item>
+        <item>Azul claro</item>
+        <item>Beige</item>
+        <item>Blanco</item>
+        <item>Bordó</item>
+        <item>Celeste</item>
+        <item>Gris claro</item>
+        <item>Gris oscuro</item>
+        <item>Marrón</item>
+        <item>Naranja</item>
+        <item>Negro</item>
+        <item>Rojo</item>
+        <item>Turquesa</item>
+        <item>Verde claro</item>
+        <item>Verde oscuro</item>
+        <item>Violeta</item>
+        <item>Otro</item>
+    </string-array>
+</resources>

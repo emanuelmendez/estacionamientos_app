@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:clickable="true"
+    android:orientation="horizontal"
+    android:padding="10dp">
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textAppearance="?android:attr/textAppearanceMedium"
+            android:text="Patente"
+            android:id="@+id/textPlate"
+            android:layout_alignParentLeft="true"/>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textAppearance="?android:attr/textAppearanceSmall"
+            android:text="Marca"
+            android:id="@+id/textBrand"
+            android:layout_marginLeft="5dp"
+            android:layout_marginRight="5dp"
+            android:layout_below="@id/textPlate"
+            android:textColor="#666"
+            />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textAppearance="?android:attr/textAppearanceSmall"
+            android:text="Modelo"
+            android:id="@+id/textModel"
+            android:layout_marginLeft="5dp"
+            android:layout_below="@id/textBrand"
+            android:textColor="#666"/>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textAppearance="?android:attr/textAppearanceSmall"
+            android:text="Color"
+            android:id="@+id/textColor"
+            android:layout_marginLeft="5dp"
+            android:layout_below="@id/textModel"
+            android:textColor="#666"/>
+
+        <ImageButton
+            android:id="@+id/button_edit_vehicle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:backgroundTint="@android:color/transparent"
+            android:scaleType="fitStart"
+            android:src="@drawable/ic_edit"
+            android:tint="@android:color/holo_blue_dark"
+            android:layout_alignParentRight="true"
+            android:layout_toLeftOf="@+id/button_delete_vehicle"
+            android:layout_marginRight="35dp"
+            android:visibility="visible" />
+
+        <ImageButton
+            android:id="@+id/button_delete_vehicle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
+            android:layout_marginLeft="5dp"
+            android:layout_marginRight="0dp"
+            android:layout_weight="1"
+            android:backgroundTint="@android:color/transparent"
+            android:paddingRight="0dp"
+            android:scaleType="fitStart"
+            android:src="@drawable/ic_delete_forever_black_24dp"
+            android:tint="@android:color/holo_red_dark"
+            android:visibility="visible"
+            tools:paddingLeft="0dp" />
+
+</RelativeLayout>

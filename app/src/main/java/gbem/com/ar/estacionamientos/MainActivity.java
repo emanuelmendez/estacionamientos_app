@@ -26,4 +26,10 @@ public class MainActivity extends AppCompatActivity {
         Intent i = new Intent(MainActivity.this, MapsActivity.class);
         startActivity(i);
     }
+
+    @OnClick(R.id.testButtonContentNav)
+    void callNavMenu() {
+        Intent i = new Intent(MainActivity.this, NavigationDrawerActivity.class);
+        startActivity(i);
+    }
 }
