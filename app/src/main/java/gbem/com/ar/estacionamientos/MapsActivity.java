@@ -5,6 +5,7 @@ import android.support.v4.app.FragmentActivity;
 import android.util.Log;
 import android.widget.Toast;
 
+import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
@@ -32,10 +33,16 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     private GoogleMap mMap;
     private ISearchService searchService;
 
+    private String token;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_maps);
+
+        if (getIntent().getStringExtra("token") != null) {
+            token = getIntent().getStringExtra("token");
+        }
 
         SupportMapFragment mapFragment =
                 (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map);
@@ -62,7 +69,9 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             @Override
             public void onMapClick(LatLng latLng) {
                 final Call<List<ParkingLotResultDTO>> call =
-                        searchService.searchNear(latLng.latitude, latLng.longitude, 1);
+                        searchService.searchNear(
+                                GoogleSignIn.getLastSignedInAccount(getApplicationContext()).getIdToken(),
+                                latLng.latitude, latLng.longitude, 1);
 
                 call.enqueue(new Callback<List<ParkingLotResultDTO>>() {
                     @Override
