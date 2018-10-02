@@ -3,21 +3,13 @@ package gbem.com.ar.estacionamientos;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentManager;
-import android.support.v4.app.FragmentManagerNonConfig;
-import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
 import android.widget.Toast;
-
-import com.google.gson.FieldNamingPolicy;
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -31,15 +23,9 @@ import gbem.com.ar.estacionamientos.api.rest.IVehicleService;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
-import retrofit2.Retrofit;
-import retrofit2.converter.gson.GsonConverterFactory;
 
 public class VehicleFragment extends Fragment {
 
-    //TODO
-    private static final String API_BASE_URL = "http://192.168.0.1:8080/web/";
-
-    private Button addVehicleButton;
     private RecyclerView mRVVehicleList;
     private AdapterVehicle mAdapter;
     private IVehicleService iVehicleService;
@@ -57,13 +43,9 @@ public class VehicleFragment extends Fragment {
         super.onViewCreated(view, savedInstanceState);
 
         //Formulario de alta de vehículo
-        view.findViewById(R.id.button_add_vehicle).setOnClickListener(new View.OnClickListener(){
-            @Override
-            public void onClick(View v) {
-
-                VehicleDialogFragment vehicleDialogFragment = new VehicleDialogFragment();
-                vehicleDialogFragment.show(getFragmentManager(),"");
-            }
+        view.findViewById(R.id.button_add_vehicle).setOnClickListener(v -> {
+            VehicleDialogFragment vehicleDialogFragment = new VehicleDialogFragment();
+            vehicleDialogFragment.show(getFragmentManager(),"");
         });
 
         //Listado de vehículos
@@ -80,17 +62,10 @@ public class VehicleFragment extends Fragment {
 
         return json;*/
 
+        if (iVehicleService == null) {
+            iVehicleService = ((EstacionamientosApp) getActivity().getApplication()).getService(IVehicleService.class);
+        }
 
-        Gson gson = new GsonBuilder()
-                .setFieldNamingPolicy(FieldNamingPolicy.LOWER_CASE_WITH_UNDERSCORES)
-                .create();
-
-        Retrofit retrofit = new Retrofit.Builder()
-                .baseUrl(API_BASE_URL)
-                .addConverterFactory(GsonConverterFactory.create(gson))
-                .build();
-
-        iVehicleService = retrofit.create(IVehicleService.class);
         Call<List<VehicleDTO>> call = iVehicleService.getVehicleByUserId(1); //TODO debe tomar el id de usuario loggeado
 
         call.enqueue(new Callback<List<VehicleDTO>>() {
@@ -134,7 +109,7 @@ public class VehicleFragment extends Fragment {
                 data.add(vehicleData);
             }
 
-            mRVVehicleList = (RecyclerView)getView().findViewById(R.id.vehicleList);
+            mRVVehicleList = getView().findViewById(R.id.vehicleList);
             //LinearLayoutManager manager = new LinearLayoutManager(getContext());
             //mRVVehicleList.setLayoutManager(manager);
             //mRVVehicleList.setHasFixedSize(true);

@@ -20,6 +20,7 @@ import butterknife.OnClick;
 public class MainActivity extends AppCompatActivity {
 
     public static final String CLIENT_ID = "349020659959-ah8n75k13u1ekbgu59tfioqkgipc46mv.apps.googleusercontent.com";
+
     @BindView(R.id.testButton)
     Button testButton;
 
@@ -34,10 +35,7 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         ButterKnife.bind(this);
 
-        // Configure sign-in to request the user's ID, email address, and basic
-        // profile. ID and basic profile are included in DEFAULT_SIGN_IN.
         GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
-                .requestEmail()
                 .requestIdToken(CLIENT_ID)
                 .build();
 
@@ -63,13 +61,11 @@ public class MainActivity extends AppCompatActivity {
     @OnClick(R.id.testButton)
     void callAPI() {
         GoogleSignInAccount account = GoogleSignIn.getLastSignedInAccount(this);
-        if (account == null) {
+        if (account != null) {
+            startActivity(new Intent(MainActivity.this, MapsActivity.class));
+        } else {
             Toast.makeText(this, "You need to sign in to continue", Toast.LENGTH_SHORT).show();
-            return;
         }
-        Intent i = new Intent(MainActivity.this, MapsActivity.class);
-        i.putExtra("token", account.getIdToken());
-        startActivity(i);
     }
 
     @OnClick(R.id.testButtonContentNav)
