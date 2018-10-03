@@ -3,10 +3,18 @@ package gbem.com.ar.estacionamientos.api.dtos;
 public class VehicleDTO {
 
     private long id;
+
     private String plate;
+
+    private boolean active;
+
     private String brand;
+
     private String model;
+
     private String color;
+
+    private long user;
 
     public long getId() {
         return id;
@@ -22,6 +30,14 @@ public class VehicleDTO {
 
     public void setPlate(String plate) {
         this.plate = plate;
+    }
+
+    public boolean isActive() {
+        return active;
+    }
+
+    public void setActive(boolean active) {
+        this.active = active;
     }
 
     public String getBrand() {
@@ -46,6 +62,14 @@ public class VehicleDTO {
 
     public void setColor(String color) {
         this.color = color;
+    }
+
+    public long getUser() {
+        return user;
+    }
+
+    public void setUser(long user) {
+        this.user = user;
     }
 
     @Override

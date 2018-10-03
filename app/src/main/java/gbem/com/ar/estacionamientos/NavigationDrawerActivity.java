@@ -14,7 +14,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 
 public class NavigationDrawerActivity extends AppCompatActivity
-        implements NavigationView.OnNavigationItemSelectedListener {
+        implements NavigationView.OnNavigationItemSelectedListener{
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -73,7 +73,9 @@ public class NavigationDrawerActivity extends AppCompatActivity
 
         if (id == R.id.nav_vehicle_admin) {
             fragment = new VehicleFragment();
+
         } else if (id == R.id.nav_search_parking) {
+            fragment = new ParkingSearchFragment();
 
         } else if (id == R.id.nav_add_credit) {
 
