@@ -81,13 +81,15 @@ public class NavigationDrawerActivity extends AppCompatActivity
 
         } else if (id == R.id.nav_record) {
 
-        } else if (id == R.id.nav_user_rep) {
-
         } else if (id == R.id.nav_reservation_admin) {
 
         } else if (id == R.id.nav_parking_admin) {
 
         } else if (id == R.id.nav_lender_rep) {
+
+        } else if (id == R.id.nav_profile_edit) {
+
+        } else if (id == R.id.nav_logout) {
 
         }
 
