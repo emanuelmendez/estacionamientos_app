@@ -1,4 +1,4 @@
-package gbem.com.ar.estacionamientos;
+package gbem.com.ar.estacionamientos.vehicles;
 
 import android.app.AlertDialog;
 import android.app.Dialog;
@@ -9,12 +9,21 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.ArrayAdapter;
+import android.widget.EditText;
 import android.widget.Spinner;
+
+import gbem.com.ar.estacionamientos.R;
 
 public class VehicleDialogFragment extends AppCompatDialogFragment {
 
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
+
+        Bundle args = getArguments();
+        String brandOptionVal = args.getString("BRAND_TO_SET");
+        String colorOptionVal = args.getString("COLOR_TO_SET");
+        String plateVal = args.getString("PLATE_TO_SET");
+        String modelVal = args.getString("MODEL_TO_SET");
 
         //Create View
         View v = LayoutInflater.from(getActivity())
@@ -26,6 +35,7 @@ public class VehicleDialogFragment extends AppCompatDialogFragment {
                 R.array.brands_array, android.R.layout.simple_spinner_item);
         adapterBrand.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         spinnerBrand.setAdapter(adapterBrand);
+        spinnerBrand.setSelection(((ArrayAdapter)spinnerBrand.getAdapter()).getPosition(brandOptionVal));
 
         //Color spinner
         Spinner spinnerColor = v.findViewById(R.id.spinner_color);
@@ -33,6 +43,13 @@ public class VehicleDialogFragment extends AppCompatDialogFragment {
                 R.array.colors_array, android.R.layout.simple_spinner_item);
         adapterColor.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         spinnerColor.setAdapter(adapterColor);
+        spinnerColor.setSelection(((ArrayAdapter)spinnerColor.getAdapter()).getPosition(colorOptionVal));
+
+        //Set Plate and Model
+        EditText plate = v.findViewById(R.id.txt_plate);
+        EditText model = v.findViewById(R.id.txt_model);
+        plate.setText(plateVal);
+        model.setText(modelVal);
 
         //Create button listener
         DialogInterface.OnClickListener listener = new DialogInterface.OnClickListener() {
