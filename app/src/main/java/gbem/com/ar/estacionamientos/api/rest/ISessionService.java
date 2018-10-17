@@ -4,6 +4,7 @@ import gbem.com.ar.estacionamientos.api.dtos.UserDataDTO;
 import retrofit2.Call;
 import retrofit2.http.GET;
 import retrofit2.http.Header;
+import retrofit2.http.POST;
 
 /**
  * @author pielreloj
@@ -25,7 +26,17 @@ public interface ISessionService {
      * @param token idToken obtenido por el GoogleSignInClient
      * @return Un Call listo para ser ejecutado asincrónicamente
      */
-    @GET("signin")
+    @GET("session/signin")
     Call<UserDataDTO> getUserData(@Header("api_token") String token);
+
+    /**
+     * Realiza la registración con los datos del usuario
+     *
+     * @param token idToken obtenido idToken obtenido por el GoogleSignInClient
+     * @param data  información del usuario para hacer el registro
+     */
+    @POST("session/signup")
+    Call<Void> signUp(@Header("api_token") String token, UserDataDTO data);
+
 
 }

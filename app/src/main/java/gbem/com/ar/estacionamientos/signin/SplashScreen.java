@@ -19,6 +19,7 @@ import gbem.com.ar.estacionamientos.MainActivity;
 import gbem.com.ar.estacionamientos.R;
 import gbem.com.ar.estacionamientos.api.dtos.UserDataDTO;
 import gbem.com.ar.estacionamientos.api.rest.ISessionService;
+import gbem.com.ar.estacionamientos.utils.Utils;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -43,10 +44,10 @@ public class SplashScreen extends AppCompatActivity {
     }
 
     private void silentSignIn() {
-        if (((EstacionamientosApp) getApplication()).getLastSignedInAccount() == null) {
-            redirectTo(MainActivity.class);
+        if (Utils.getApp(this).getLastSignedInAccount() == null) {
+            redirectTo(SignInActivity.class);
         } else {
-            ((EstacionamientosApp) getApplication()).getGoogleSignInClient().silentSignIn()
+            Utils.getApp(this).getGoogleSignInClient().silentSignIn()
                     .addOnSuccessListener(this::onSuccess)
                     .addOnFailureListener(this::onFailure);
         }
@@ -57,8 +58,7 @@ public class SplashScreen extends AppCompatActivity {
             // No debería suceder si el lastSignedInAccount retornó distinto a null
             redirectTo(SignInActivity.class);
         } else {
-            final ISessionService sessionService =
-                    ((EstacionamientosApp) getApplication()).getService(ISessionService.class);
+            final ISessionService sessionService = Utils.getApp(this).getService(ISessionService.class);
             final Call<UserDataDTO> call = sessionService.getUserData(account.getIdToken());
             call.enqueue(new SessionServiceCallback());
         }
@@ -88,7 +88,7 @@ public class SplashScreen extends AppCompatActivity {
         public void onResponse(@NonNull Call<UserDataDTO> call, @NonNull Response<UserDataDTO> response) {
             if (response.isSuccessful()) {
                 redirectTo(MainActivity.class, response.body());
-            } else if (response.code() == 403) {
+            } else if (response.code() == 404) {
                 // el usuario no está registrado pero hizo signin (i.e. abandonó el proceso de registración)
                 redirectTo(SignUpActivity.class);
             } else {
