@@ -14,7 +14,6 @@ import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
-import gbem.com.ar.estacionamientos.EstacionamientosApp;
 import gbem.com.ar.estacionamientos.MainActivity;
 import gbem.com.ar.estacionamientos.R;
 import gbem.com.ar.estacionamientos.api.dtos.UserDataDTO;
