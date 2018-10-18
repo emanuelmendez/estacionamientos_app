@@ -1,5 +1,6 @@
 package gbem.com.ar.estacionamientos.vehicles;
 
+import android.content.DialogInterface;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
@@ -21,7 +22,7 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
-public class VehicleFragment extends Fragment {
+public class VehicleFragment extends Fragment implements IDialogDismissListener{
 
     private RecyclerView mRVVehicleList;
     private AdapterVehicle mAdapter;
@@ -47,11 +48,29 @@ public class VehicleFragment extends Fragment {
             bundle.putString("PLATE_TO_SET","");
             bundle.putString("MODEL_TO_SET","");
             vehicleDialogFragment.setArguments(bundle);
+            vehicleDialogFragment.setListener(this);
+
+            /*vehicleDialogFragment.setOnDismissListener(new DialogInterface.OnDismissListener() {
+                @Override
+                public void onDismiss(DialogInterface dialog) {
+                    getVehicleJson();
+                }
+            });*/
+
             vehicleDialogFragment.show(getFragmentManager(),"");
         });
 
         //Listado de vehículos
         getVehicleJson();
+
+        /*VehicleDialogFragment d = new VehicleDialogFragment();
+        d.setOnDismissListener(new DialogInterface.OnDismissListener() {
+            @Override
+            public void onDismiss(DialogInterface dialog) {
+
+            }
+        });
+        d.show(getFragmentManager(), "Actualiza vehículos");*/
     }
 
     public void getVehicleJson(){
@@ -111,4 +130,9 @@ public class VehicleFragment extends Fragment {
         }
     }
 
+    @Override
+    public void onDismissClick() {
+        Log.i("TAG","onDismissClick");
+        getVehicleJson();
+    }
 }

@@ -11,10 +11,22 @@ import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.Spinner;
+import android.widget.Toast;
 
+import gbem.com.ar.estacionamientos.EstacionamientosApp;
 import gbem.com.ar.estacionamientos.R;
+import gbem.com.ar.estacionamientos.api.dtos.VehicleDTO;
+import gbem.com.ar.estacionamientos.api.rest.IVehicleService;
+import okhttp3.ResponseBody;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 public class VehicleDialogFragment extends AppCompatDialogFragment {
+
+    private IVehicleService iVehicleService;
+    private DialogInterface.OnDismissListener onDismissListener;
+    private IDialogDismissListener iDialogDismissListener;
 
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
@@ -28,6 +40,10 @@ public class VehicleDialogFragment extends AppCompatDialogFragment {
         //Create View
         View v = LayoutInflater.from(getActivity())
                 .inflate(R.layout.dialog_vehicle_input_form, null);
+
+        if (iVehicleService == null) {
+            iVehicleService = ((EstacionamientosApp) v.getContext().getApplicationContext()).getService(IVehicleService.class);
+        }
 
         //Brand spinner
         Spinner spinnerBrand = v.findViewById(R.id.spinner_brand);
@@ -52,10 +68,52 @@ public class VehicleDialogFragment extends AppCompatDialogFragment {
         model.setText(modelVal);
 
         //Create button listener
-        DialogInterface.OnClickListener listener = new DialogInterface.OnClickListener() {
+        DialogInterface.OnClickListener saveData = new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialogInterface, int i) {
-                Log.i("TAG","Se clickeó botón!!");
+
+                VehicleDTO jsonData = new VehicleDTO();
+
+                jsonData.setPlate(plate.getText().toString());
+                jsonData.setBrand(spinnerBrand.getSelectedItem().toString());
+                jsonData.setModel(model.getText().toString());
+                jsonData.setColor(spinnerColor.getSelectedItem().toString());
+
+                Call<ResponseBody> saveNewVehicle = iVehicleService.saveNewVehicle(1,jsonData);//TODO reemplazar con id de usuario loggeado
+                saveNewVehicle.enqueue(new Callback<ResponseBody>() {
+                    @Override
+                    public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
+                        switch (response.code()) {
+                            case 201:
+                                Log.i("TAG",response.body().toString());
+                                Toast.makeText(v.getContext(), "Vehículo guardado con éxito", Toast.LENGTH_SHORT).show();
+                                Log.i("TAG","ENTRO POR 201");
+                                dialogInterface.cancel();
+                                break;
+                            case 401:
+                                Log.i("TAG","ENTRO POR 401");
+                                break;
+                            default:
+                                Log.i("TAG","ENTRO POR DEFAULT");
+                                break;
+                        }
+                    }
+
+                    @Override
+                    public void onFailure(Call<ResponseBody> call, Throwable t) {
+                        Toast.makeText(getContext(), "Error al intentar guardar el vehículo", Toast.LENGTH_SHORT).show();
+                    }
+                });
+
+                Log.i("TAG","Se clickeó guardar!!");
+            }
+        };
+
+        DialogInterface.OnClickListener cancel = new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i) {
+                dialogInterface.cancel();
+                Log.i("TAG","Se clickeó cancelar!!");
             }
         };
 
@@ -63,7 +121,25 @@ public class VehicleDialogFragment extends AppCompatDialogFragment {
         return new AlertDialog.Builder(getActivity())
                 .setTitle("Complete el formulario")
                 .setView(v)
-                .setPositiveButton(R.string.cancel,listener)
+                .setPositiveButton(R.string.save,saveData)
+                .setNegativeButton(R.string.cancel,cancel)
                 .create();
     }
+    public void setListener(IDialogDismissListener listener) {
+        iDialogDismissListener = listener;
+    }
+
+    /*
+    public void onClick(View v) {
+        iDialogDismissListener.onDismissClick();
+        getDialog().dismiss();
+    }
+*/
+    @Override
+    public void onStop() {
+        super.onStop();
+        if(iDialogDismissListener!=null)
+            iDialogDismissListener.onDismissClick();
+    }
+
 }

@@ -183,4 +183,9 @@ public class AdapterVehicle extends RecyclerView.Adapter<RecyclerView.ViewHolder
         }
 
     }
+
+    public void addNewVehicleToList(VehicleDTO newVehicle) {
+        this.data.add(newVehicle);
+        notifyDataSetChanged();
+    }
 }
