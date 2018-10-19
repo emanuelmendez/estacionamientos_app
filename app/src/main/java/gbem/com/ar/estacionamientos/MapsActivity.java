@@ -50,12 +50,10 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 CameraUpdateFactory.newCameraPosition(
                         CameraPosition.fromLatLngZoom(new LatLng(-34.625, -58.485), 15.0F)));
 
-        mMap.setOnMapClickListener(latLng -> {
-            searchService.searchNear(
-                    GoogleSignIn.getLastSignedInAccount(getApplicationContext()).getIdToken(),
-                    latLng.latitude, latLng.longitude, 1)
-                    .enqueue(onSearchCallback);
-        });
+        mMap.setOnMapClickListener(latLng -> searchService.searchNear(
+                GoogleSignIn.getLastSignedInAccount(getApplicationContext()).getIdToken(),
+                latLng.latitude, latLng.longitude, 1)
+                .enqueue(onSearchCallback));
     }
 
     private final class OnSearchCallback implements Callback<List<ParkingLotResultDTO>> {

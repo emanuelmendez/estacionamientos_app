@@ -1,6 +1,10 @@
 package gbem.com.ar.estacionamientos.api.dtos;
 
-public class VehicleDTO {
+import java.io.Serializable;
+
+public class VehicleDTO implements Serializable {
+
+    private static final long serialVersionUID = -2650522845717940780L;
 
     private long id;
 

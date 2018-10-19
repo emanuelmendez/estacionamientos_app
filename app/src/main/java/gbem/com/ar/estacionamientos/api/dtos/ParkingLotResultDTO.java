@@ -1,10 +1,14 @@
 package gbem.com.ar.estacionamientos.api.dtos;
 
+import java.io.Serializable;
+
 /**
  * @author pielreloj
  * Created: 15/09/18.
  */
-public class ParkingLotResultDTO {
+public class ParkingLotResultDTO implements Serializable {
+
+    private static final long serialVersionUID = -2650522845717940780L;
 
     private long id;
     private String description;
