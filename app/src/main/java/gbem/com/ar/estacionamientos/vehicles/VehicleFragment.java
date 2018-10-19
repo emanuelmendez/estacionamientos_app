@@ -1,7 +1,7 @@
-package gbem.com.ar.estacionamientos;
+package gbem.com.ar.estacionamientos.vehicles;
 
+import android.content.DialogInterface;
 import android.os.Bundle;
-import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -11,25 +11,22 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Toast;
 
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
-
 import java.util.ArrayList;
 import java.util.List;
 
+import gbem.com.ar.estacionamientos.EstacionamientosApp;
+import gbem.com.ar.estacionamientos.R;
 import gbem.com.ar.estacionamientos.api.dtos.VehicleDTO;
 import gbem.com.ar.estacionamientos.api.rest.IVehicleService;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
-public class VehicleFragment extends Fragment {
+public class VehicleFragment extends Fragment implements IDialogDismissListener{
 
     private RecyclerView mRVVehicleList;
     private AdapterVehicle mAdapter;
     private IVehicleService iVehicleService;
-
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -39,28 +36,44 @@ public class VehicleFragment extends Fragment {
     }
 
     @Override
-    public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
+    public void onViewCreated(View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
         //Formulario de alta de vehículo
         view.findViewById(R.id.button_add_vehicle).setOnClickListener(v -> {
             VehicleDialogFragment vehicleDialogFragment = new VehicleDialogFragment();
+            Bundle bundle = new Bundle();
+            bundle.putString("BRAND_TO_SET","");
+            bundle.putString("COLOR_TO_SET","");
+            bundle.putString("PLATE_TO_SET","");
+            bundle.putString("MODEL_TO_SET","");
+            vehicleDialogFragment.setArguments(bundle);
+            vehicleDialogFragment.setListener(this);
+
+            /*vehicleDialogFragment.setOnDismissListener(new DialogInterface.OnDismissListener() {
+                @Override
+                public void onDismiss(DialogInterface dialog) {
+                    getVehicleJson();
+                }
+            });*/
+
             vehicleDialogFragment.show(getFragmentManager(),"");
         });
 
         //Listado de vehículos
         getVehicleJson();
+
+        /*VehicleDialogFragment d = new VehicleDialogFragment();
+        d.setOnDismissListener(new DialogInterface.OnDismissListener() {
+            @Override
+            public void onDismiss(DialogInterface dialog) {
+
+            }
+        });
+        d.show(getFragmentManager(), "Actualiza vehículos");*/
     }
 
     public void getVehicleJson(){
-        /*String json = "[{\"id\":1, \"plate\":\"ASD123\",\"brand\":\"Ford\",\"model\":\"Ka\",\"color\":\"Blanco\"},\n" +
-                "{\"id\":\"2\",\"plate\":\"ZXC555\",\"brand\":\"Fiat\",\"model\":\"Palio\",\"color\":\"Rojo\"},\n" +
-                "{\"id\":\"3\",\"plate\":\"TGB444\",\"brand\":\"Renault\",\"model\":\"Clio\",\"color\":\"Azul claro\"},\n" +
-                "{\"id\":\"4\",\"plate\":\"YHN885\",\"brand\":\"Ford\",\"model\":\"Fiesta\",\"color\":\"Turquesa\"},\n" +
-                "{\"id\":\"5\",\"plate\":\"ESG413\",\"brand\":\"Audi\",\"model\":\"C4\",\"color\":\"Gris claro\"},\n" +
-                "{\"id\":\"6\",\"plate\":\"LSK953\",\"brand\":\"Peugeot\",\"model\":\"206\",\"color\":\"Negro\"}]";
-
-        return json;*/
 
         if (iVehicleService == null) {
             iVehicleService = ((EstacionamientosApp) getActivity().getApplication()).getService(IVehicleService.class);
@@ -96,29 +109,30 @@ public class VehicleFragment extends Fragment {
         List<VehicleDTO> data = new ArrayList<>();
 
         try {
-            JSONArray jArray = new JSONArray(result);
-
-            for(int i=0;i<jArray.length();i++){
-                JSONObject json_data = jArray.getJSONObject(i);
+            for(int i=0;i<result.size();i++){
                 VehicleDTO vehicleData = new VehicleDTO();
-                vehicleData.setId(json_data.getLong("id"));
-                vehicleData.setPlate(json_data.getString("plate"));
-                vehicleData.setBrand(json_data.getString("brand"));
-                vehicleData.setModel(json_data.getString("model"));
-                vehicleData.setColor(json_data.getString("color"));
+
+                vehicleData.setId(result.get(i).getId());
+                vehicleData.setPlate(result.get(i).getPlate());
+                vehicleData.setBrand(result.get(i).getBrand());
+                vehicleData.setModel(result.get(i).getModel());
+                vehicleData.setColor(result.get(i).getColor());
                 data.add(vehicleData);
             }
 
             mRVVehicleList = getView().findViewById(R.id.vehicleList);
-            //LinearLayoutManager manager = new LinearLayoutManager(getContext());
-            //mRVVehicleList.setLayoutManager(manager);
-            //mRVVehicleList.setHasFixedSize(true);
             mAdapter = new AdapterVehicle(getActivity(), data);
             mRVVehicleList.setAdapter(mAdapter);
             mRVVehicleList.setLayoutManager(new LinearLayoutManager(getActivity()));
 
-        } catch (JSONException e) {
+        } catch (Exception e) {
             Toast.makeText(getActivity(), e.toString(), Toast.LENGTH_LONG).show();
         }
+    }
+
+    @Override
+    public void onDismissClick() {
+        Log.i("TAG","onDismissClick");
+        getVehicleJson();
     }
 }
