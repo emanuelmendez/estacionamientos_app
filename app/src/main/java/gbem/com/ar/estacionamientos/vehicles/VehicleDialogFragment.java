@@ -36,6 +36,7 @@ public class VehicleDialogFragment extends AppCompatDialogFragment {
         String colorOptionVal = args.getString("COLOR_TO_SET");
         String plateVal = args.getString("PLATE_TO_SET");
         String modelVal = args.getString("MODEL_TO_SET");
+        long vehicleId = args.getLong("VEHICLE_ID");
 
         //Create View
         View v = LayoutInflater.from(getActivity())
@@ -72,6 +73,7 @@ public class VehicleDialogFragment extends AppCompatDialogFragment {
             @Override
             public void onClick(DialogInterface dialogInterface, int i) {
 
+                Call<ResponseBody> saveNewVehicle;
                 VehicleDTO jsonData = new VehicleDTO();
 
                 jsonData.setPlate(plate.getText().toString());
@@ -79,14 +81,22 @@ public class VehicleDialogFragment extends AppCompatDialogFragment {
                 jsonData.setModel(model.getText().toString());
                 jsonData.setColor(spinnerColor.getSelectedItem().toString());
 
-                Call<ResponseBody> saveNewVehicle = iVehicleService.saveNewVehicle(1,jsonData);//TODO reemplazar con id de usuario loggeado
+                if(vehicleId == 0){
+                    saveNewVehicle = iVehicleService.saveNewVehicle(1,jsonData);//TODO reemplazar con id de usuario loggeado
+                }else{
+                    saveNewVehicle = iVehicleService.editVehicle(1,vehicleId,jsonData);//TODO reemplazar con id de usuario loggeado
+                }
                 saveNewVehicle.enqueue(new Callback<ResponseBody>() {
                     @Override
                     public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
                         switch (response.code()) {
                             case 201:
-                                Log.i("TAG",response.body().toString());
                                 Toast.makeText(v.getContext(), "Vehículo guardado con éxito", Toast.LENGTH_SHORT).show();
+                                Log.i("TAG","ENTRO POR 201");
+                                dialogInterface.cancel();
+                                break;
+                            case 200:
+                                Toast.makeText(v.getContext(), "Vehículo editado con éxito", Toast.LENGTH_SHORT).show();
                                 Log.i("TAG","ENTRO POR 201");
                                 dialogInterface.cancel();
                                 break;
@@ -104,8 +114,6 @@ public class VehicleDialogFragment extends AppCompatDialogFragment {
                         Toast.makeText(getContext(), "Error al intentar guardar el vehículo", Toast.LENGTH_SHORT).show();
                     }
                 });
-
-                Log.i("TAG","Se clickeó guardar!!");
             }
         };
 
@@ -126,20 +134,14 @@ public class VehicleDialogFragment extends AppCompatDialogFragment {
                 .create();
     }
     public void setListener(IDialogDismissListener listener) {
+
         iDialogDismissListener = listener;
     }
 
-    /*
-    public void onClick(View v) {
-        iDialogDismissListener.onDismissClick();
-        getDialog().dismiss();
-    }
-*/
     @Override
-    public void onStop() {
-        super.onStop();
-        if(iDialogDismissListener!=null)
-            iDialogDismissListener.onDismissClick();
-    }
+    public void onDismiss(DialogInterface dialog) {
+        super.onDismiss(dialog);
 
+        iDialogDismissListener.onDismissClick();
+    }
 }

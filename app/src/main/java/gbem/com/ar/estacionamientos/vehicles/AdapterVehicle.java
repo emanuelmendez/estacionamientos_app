@@ -3,8 +3,11 @@ package gbem.com.ar.estacionamientos.vehicles;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.v4.app.FragmentActivity;
+import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
@@ -27,7 +30,7 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
-public class AdapterVehicle extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
+public class AdapterVehicle extends RecyclerView.Adapter<RecyclerView.ViewHolder> implements IDialogDismissListener{
     private Context context;
     private LayoutInflater inflater;
     List<VehicleDTO> data= Collections.emptyList();
@@ -54,13 +57,13 @@ public class AdapterVehicle extends RecyclerView.Adapter<RecyclerView.ViewHolder
 
         //EDIT
         ImageButton btnEditVehicle = (ImageButton) view.findViewById(R.id.button_edit_vehicle);
-        btnEditVehicle.setOnClickListener(new View.OnClickListener() {
-            public void onClick(View v) {
+        btnEditVehicle.setOnClickListener(v -> {
                 //Formulario de edición de vehículo
                 String currentBrand = ((TextView) view.findViewById(R.id.textBrand)).getText().toString().split(" ")[1];
                 String currentColor = ((TextView) view.findViewById(R.id.textColor)).getText().toString().split(" ")[1];
                 String currentPlate = ((TextView) view.findViewById(R.id.textPlate)).getText().toString();
                 String currentModel = ((TextView) view.findViewById(R.id.textModel)).getText().toString().split(" ")[1];
+
                 FragmentActivity activity = (FragmentActivity)(context);
                 FragmentManager fm = activity.getSupportFragmentManager();
                 VehicleDialogFragment vehicleDialogFragment = new VehicleDialogFragment();
@@ -69,24 +72,23 @@ public class AdapterVehicle extends RecyclerView.Adapter<RecyclerView.ViewHolder
                 bundle.putString("COLOR_TO_SET",currentColor);
                 bundle.putString("PLATE_TO_SET",currentPlate);
                 bundle.putString("MODEL_TO_SET",currentModel);
+                bundle.putLong("VEHICLE_ID",Long.parseLong((v.getTag().toString()).split("_")[1]));
                 vehicleDialogFragment.setArguments(bundle);
+                vehicleDialogFragment.setListener(this);
                 vehicleDialogFragment.show(fm,"Editar vehículo");
                 vehicleDialogFragment.getView();
-                String currentPosition = (v.getTag().toString()).split("_")[0];
+
                 Log.i("EDIT","Posición!! "+(v.getTag().toString()).split("_")[0]);
                 Log.i("EDIT","ID !! "+(v.getTag().toString()).split("_")[1]);
-            }
         });
 
         //DELETE
         ImageButton btnDeleteVehicle = (ImageButton) view.findViewById(R.id.button_delete_vehicle);
-        btnDeleteVehicle.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
+        btnDeleteVehicle.setOnClickListener(v -> {
                 //Delete alert
                 AlertDialog.Builder alert = new AlertDialog.Builder(v.getContext());
                 alert.setTitle("Eliminar vehículo");
-                alert.setMessage("¿Está seguro que quiere eliminar éste vehículo?");
+                alert.setMessage("¿Está seguro que quiere eliminar este vehículo?");
                 //Confirma eliminación
                 alert.setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int which) {
@@ -128,7 +130,6 @@ public class AdapterVehicle extends RecyclerView.Adapter<RecyclerView.ViewHolder
                     }
                 });
                 alert.show();
-            }
         });
 
         return holder;
@@ -149,11 +150,6 @@ public class AdapterVehicle extends RecyclerView.Adapter<RecyclerView.ViewHolder
         myHolder.deleteButton.setTag(position+"_"+current.getId());
     }
 
-    // return total item from List
-    /*@Override
-    public int getItemCount() {
-        return data.size();
-    }*/
     @Override
     public int getItemCount() {
         if (data != null)
@@ -184,8 +180,23 @@ public class AdapterVehicle extends RecyclerView.Adapter<RecyclerView.ViewHolder
 
     }
 
-    public void addNewVehicleToList(VehicleDTO newVehicle) {
-        this.data.add(newVehicle);
-        notifyDataSetChanged();
+    @Override
+    public void onDismissClick() {
+        final Handler handler = new Handler();
+        handler.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+
+                //TODO: instancia un nuevo VehicleFragment para actualizar vista, mejorar!
+                FragmentActivity activity = (FragmentActivity)(context);
+                Fragment fragment = new VehicleFragment();
+                FragmentManager fragmentManager = activity.getSupportFragmentManager();
+                FragmentTransaction ft = fragmentManager.beginTransaction();
+
+                ft.replace(R.id.screen_area, fragment);
+                ft.commit();
+            }
+        }, 500);
     }
+
 }

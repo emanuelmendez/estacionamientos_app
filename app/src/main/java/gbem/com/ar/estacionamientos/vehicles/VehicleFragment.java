@@ -2,6 +2,7 @@ package gbem.com.ar.estacionamientos.vehicles;
 
 import android.content.DialogInterface;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -47,30 +48,15 @@ public class VehicleFragment extends Fragment implements IDialogDismissListener{
             bundle.putString("COLOR_TO_SET","");
             bundle.putString("PLATE_TO_SET","");
             bundle.putString("MODEL_TO_SET","");
+            bundle.putLong("VEHICLE_ID",0);
             vehicleDialogFragment.setArguments(bundle);
             vehicleDialogFragment.setListener(this);
-
-            /*vehicleDialogFragment.setOnDismissListener(new DialogInterface.OnDismissListener() {
-                @Override
-                public void onDismiss(DialogInterface dialog) {
-                    getVehicleJson();
-                }
-            });*/
 
             vehicleDialogFragment.show(getFragmentManager(),"");
         });
 
         //Listado de vehículos
         getVehicleJson();
-
-        /*VehicleDialogFragment d = new VehicleDialogFragment();
-        d.setOnDismissListener(new DialogInterface.OnDismissListener() {
-            @Override
-            public void onDismiss(DialogInterface dialog) {
-
-            }
-        });
-        d.show(getFragmentManager(), "Actualiza vehículos");*/
     }
 
     public void getVehicleJson(){
@@ -132,7 +118,12 @@ public class VehicleFragment extends Fragment implements IDialogDismissListener{
 
     @Override
     public void onDismissClick() {
-        Log.i("TAG","onDismissClick");
-        getVehicleJson();
+        final Handler handler = new Handler();
+        handler.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                getVehicleJson();
+            }
+        }, 500);
     }
 }
