@@ -3,17 +3,21 @@ package gbem.com.ar.estacionamientos.signin;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
-import android.support.design.widget.CoordinatorLayout;
+import android.support.constraint.ConstraintLayout;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
-import android.view.View;
 import android.widget.ProgressBar;
 
+import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
+import com.google.android.gms.common.SignInButton;
+
+import java.util.Objects;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import butterknife.OnClick;
 import gbem.com.ar.estacionamientos.MainActivity;
 import gbem.com.ar.estacionamientos.R;
 import gbem.com.ar.estacionamientos.api.dtos.UserDataDTO;
@@ -23,15 +27,24 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
+import static android.view.View.INVISIBLE;
+import static android.view.View.VISIBLE;
+
 public class SplashScreen extends AppCompatActivity {
 
     private static final String TAG = SplashScreen.class.getSimpleName();
+    private static final int REQUEST_CODE = 1234;
+
+    @BindView(R.id.sign_in_button)
+    SignInButton signInButton;
 
     @BindView(R.id.splash_screen_progress_bar)
     ProgressBar progressBar;
 
     @BindView(R.id.splash_screen_layout)
-    CoordinatorLayout layout;
+    ConstraintLayout layout;
+
+    private SessionServiceCallback sessionServiceCallback;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -44,7 +57,7 @@ public class SplashScreen extends AppCompatActivity {
 
     private void silentSignIn() {
         if (Utils.getApp(this).getLastSignedInAccount() == null) {
-            redirectTo(SignInActivity.class);
+            showSignInButton();
         } else {
             Utils.getApp(this).getGoogleSignInClient().silentSignIn()
                     .addOnSuccessListener(this::onSuccess)
@@ -55,21 +68,25 @@ public class SplashScreen extends AppCompatActivity {
     private void onSuccess(GoogleSignInAccount account) {
         if (account == null) {
             // No debería suceder si el lastSignedInAccount retornó distinto a null
-            redirectTo(SignInActivity.class);
+            showSignInButton();
         } else {
-            final ISessionService sessionService = Utils.getApp(this).getService(ISessionService.class);
-            final Call<UserDataDTO> call = sessionService.getUserData(account.getIdToken());
-            call.enqueue(new SessionServiceCallback());
+            sendGoogleAccountToBackend(account);
         }
+    }
+
+    private void sendGoogleAccountToBackend(@NonNull GoogleSignInAccount account) {
+        final ISessionService sessionService = Utils.getApp(this).getService(ISessionService.class);
+        final Call<UserDataDTO> call = sessionService.getUserData(account.getIdToken());
+
+        if (sessionServiceCallback == null) {
+            sessionServiceCallback = new SessionServiceCallback();
+        }
+        call.enqueue(sessionServiceCallback);
     }
 
     private void onFailure(Exception e) {
         Log.e(TAG, "Silent SingIn Failed. Redirected to SignInActivity", e);
-        redirectTo(SignInActivity.class);
-    }
-
-    private void redirectTo(Class<? extends AppCompatActivity> activityClass) {
-        this.redirectTo(activityClass, null);
+        showSignInButton();
     }
 
     private void redirectTo(Class<? extends AppCompatActivity> activityClass, final UserDataDTO userData) {
@@ -81,15 +98,41 @@ public class SplashScreen extends AppCompatActivity {
         finish();
     }
 
+    private void showSignInButton() {
+        progressBar.setVisibility(INVISIBLE);
+        signInButton.setVisibility(VISIBLE);
+    }
+
+    private void showProgressBar() {
+        progressBar.setVisibility(VISIBLE);
+        signInButton.setVisibility(INVISIBLE);
+    }
+
+    @OnClick(R.id.sign_in_button)
+    void signIn() {
+        final Intent signInIntent = Utils.getApp(this).getGoogleSignInClient().getSignInIntent();
+        startActivityForResult(signInIntent, REQUEST_CODE);
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == REQUEST_CODE) {
+            showProgressBar();
+            final GoogleSignInAccount account = GoogleSignIn.getSignedInAccountFromIntent(data).getResult();
+            sendGoogleAccountToBackend(Objects.requireNonNull(account));
+        }
+    }
+
     private final class SessionServiceCallback implements Callback<UserDataDTO> {
 
         @Override
         public void onResponse(@NonNull Call<UserDataDTO> call, @NonNull Response<UserDataDTO> response) {
             if (response.isSuccessful()) {
                 redirectTo(MainActivity.class, response.body());
-            } else if (response.code() == 404) {
+            } else if (response.code() == 403 || response.code() == 404) {
                 // el usuario no está registrado pero hizo signin (i.e. abandonó el proceso de registración)
-                redirectTo(SignUpActivity.class);
+                redirectTo(SignUpActivity.class, null);
             } else {
                 Log.e(TAG, String.format("Unsuccessful response: %s %d", response.message(), response.code()));
                 showRetryAction();
@@ -104,13 +147,13 @@ public class SplashScreen extends AppCompatActivity {
         }
 
         private void showRetryAction() {
-            progressBar.setVisibility(View.GONE);
+            progressBar.setVisibility(INVISIBLE);
 
             final Snackbar snackbar = Snackbar.make(layout, "Connectivity error", Snackbar.LENGTH_INDEFINITE);
 
             snackbar.setAction("Retry", v -> {
                 snackbar.dismiss();
-                progressBar.setVisibility(View.VISIBLE);
+                showProgressBar();
                 silentSignIn();
             });
 
