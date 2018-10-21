@@ -21,7 +21,6 @@ import butterknife.OnClick;
 import gbem.com.ar.estacionamientos.MainActivity;
 import gbem.com.ar.estacionamientos.R;
 import gbem.com.ar.estacionamientos.api.dtos.UserDataDTO;
-import gbem.com.ar.estacionamientos.api.rest.ISessionService;
 import gbem.com.ar.estacionamientos.utils.Utils;
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -30,9 +29,9 @@ import retrofit2.Response;
 import static android.view.View.INVISIBLE;
 import static android.view.View.VISIBLE;
 
-public class SplashScreen extends AppCompatActivity {
+public class LoginActivity extends AppCompatActivity {
 
-    private static final String TAG = SplashScreen.class.getSimpleName();
+    private static final String TAG = LoginActivity.class.getSimpleName();
     private static final int REQUEST_CODE = 1234;
 
     @BindView(R.id.sign_in_button)
@@ -79,7 +78,7 @@ public class SplashScreen extends AppCompatActivity {
         final Call<UserDataDTO> call = sessionService.getUserData(account.getIdToken());
 
         if (sessionServiceCallback == null) {
-            sessionServiceCallback = new SessionServiceCallback();
+            sessionServiceCallback = new SessionServiceCallback(account);
         }
         call.enqueue(sessionServiceCallback);
     }
@@ -90,7 +89,7 @@ public class SplashScreen extends AppCompatActivity {
     }
 
     private void redirectTo(Class<? extends AppCompatActivity> activityClass, final UserDataDTO userData) {
-        final Intent intent = new Intent(SplashScreen.this, activityClass);
+        final Intent intent = new Intent(LoginActivity.this, activityClass);
         if (userData != null) {
             intent.putExtra("user_data", userData);
         }
@@ -126,17 +125,36 @@ public class SplashScreen extends AppCompatActivity {
 
     private final class SessionServiceCallback implements Callback<UserDataDTO> {
 
+        private final GoogleSignInAccount account;
+
+        private SessionServiceCallback(GoogleSignInAccount account) {
+            this.account = account;
+        }
+
         @Override
         public void onResponse(@NonNull Call<UserDataDTO> call, @NonNull Response<UserDataDTO> response) {
             if (response.isSuccessful()) {
                 redirectTo(MainActivity.class, response.body());
             } else if (response.code() == 403 || response.code() == 404) {
                 // el usuario no está registrado pero hizo signin (i.e. abandonó el proceso de registración)
-                redirectTo(SignUpActivity.class, null);
+                UserDataDTO u = createUserDataFromAccount();
+                redirectTo(SignUpActivity.class, u);
             } else {
                 Log.e(TAG, String.format("Unsuccessful response: %s %d", response.message(), response.code()));
                 showRetryAction();
             }
+        }
+
+        @NonNull
+        private UserDataDTO createUserDataFromAccount() {
+            final UserDataDTO u = new UserDataDTO();
+            u.setName(account.getGivenName());
+            u.setSurname(account.getFamilyName());
+            u.setActive(false);
+            final String email = Objects.requireNonNull(account.getEmail());
+            u.setEmail(email);
+            u.setUsername(email.substring(0, email.indexOf('@')));
+            return u;
         }
 
         @Override

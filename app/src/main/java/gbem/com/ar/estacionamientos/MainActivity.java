@@ -14,6 +14,7 @@ import com.google.android.gms.common.SignInButton;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
+import gbem.com.ar.estacionamientos.api.dtos.UserDataDTO;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -28,6 +29,14 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         ButterKnife.bind(this);
+
+        // TODO temporal hasta armar el dashboard
+        final Bundle extras = getIntent().getExtras();
+        if (extras != null && extras.get("user_data") != null) {
+            UserDataDTO userData = (UserDataDTO) extras.get("user_data");
+            if (userData == null) userData = new UserDataDTO();
+            Toast.makeText(this, "User: " + userData.getEmail(), Toast.LENGTH_LONG).show();
+        }
     }
 
     @OnClick(R.id.sign_in_button)
