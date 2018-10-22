@@ -153,7 +153,6 @@ public class LoginActivity extends AppCompatActivity {
             u.setActive(false);
             final String email = Objects.requireNonNull(account.getEmail());
             u.setEmail(email);
-            u.setUsername(email.substring(0, email.indexOf('@')));
             return u;
         }
 

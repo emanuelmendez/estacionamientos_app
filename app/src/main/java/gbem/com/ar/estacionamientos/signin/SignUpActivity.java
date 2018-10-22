@@ -107,6 +107,9 @@ public class SignUpActivity extends AppCompatActivity {
                 startActivity(intent);
                 finish();
             } else {
+                if (response.code() == 409) {
+                    txtPhone.setError("Este número ya fue utilizado por otra cuenta");
+                }
                 showRetryAction();
             }
         }
