@@ -17,7 +17,7 @@ import retrofit2.converter.gson.GsonConverterFactory;
 public class EstacionamientosApp extends Application {
 
     // ip a cambiar para pruebas
-    private static final String API_BASE_URL = "http://192.168.0.37:8080/web/";
+    private static final String API_BASE_URL = "http://10.0.2.2:8080/web/";
     private static final String CLIENT_ID = "349020659959-ah8n75k13u1ekbgu59tfioqkgipc46mv.apps.googleusercontent.com";
 
     private Retrofit retrofit;
