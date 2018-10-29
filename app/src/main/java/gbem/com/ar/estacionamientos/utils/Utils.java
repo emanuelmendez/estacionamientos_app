@@ -22,4 +22,6 @@ public final class Utils {
         return (EstacionamientosApp) activity.getApplication();
     }
 
+    public static final String USER_DATA_KEY = "user_data";
+
 }

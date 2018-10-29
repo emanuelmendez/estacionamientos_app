@@ -18,7 +18,7 @@ import java.util.Objects;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
-import gbem.com.ar.estacionamientos.MainActivity;
+import gbem.com.ar.estacionamientos.dashboard.NavigationDrawerActivity;
 import gbem.com.ar.estacionamientos.R;
 import gbem.com.ar.estacionamientos.api.dtos.UserDataDTO;
 import gbem.com.ar.estacionamientos.utils.Utils;
@@ -28,6 +28,7 @@ import retrofit2.Response;
 
 import static android.view.View.INVISIBLE;
 import static android.view.View.VISIBLE;
+import static gbem.com.ar.estacionamientos.utils.Utils.USER_DATA_KEY;
 
 public class LoginActivity extends AppCompatActivity {
 
@@ -91,7 +92,7 @@ public class LoginActivity extends AppCompatActivity {
     private void redirectTo(Class<? extends AppCompatActivity> activityClass, final UserDataDTO userData) {
         final Intent intent = new Intent(LoginActivity.this, activityClass);
         if (userData != null) {
-            intent.putExtra("user_data", userData);
+            intent.putExtra(USER_DATA_KEY, userData);
         }
         startActivity(intent);
         finish();
@@ -134,7 +135,7 @@ public class LoginActivity extends AppCompatActivity {
         @Override
         public void onResponse(@NonNull Call<UserDataDTO> call, @NonNull Response<UserDataDTO> response) {
             if (response.isSuccessful()) {
-                redirectTo(MainActivity.class, response.body());
+                redirectTo(NavigationDrawerActivity.class, response.body());
             } else if (response.code() == 403 || response.code() == 404) {
                 // el usuario no está registrado pero hizo signin (i.e. abandonó el proceso de registración)
                 UserDataDTO u = createUserDataFromAccount();
@@ -166,9 +167,9 @@ public class LoginActivity extends AppCompatActivity {
         private void showRetryAction() {
             progressBar.setVisibility(INVISIBLE);
 
-            final Snackbar snackbar = Snackbar.make(layout, "Connectivity error", Snackbar.LENGTH_INDEFINITE);
+            final Snackbar snackbar = Snackbar.make(layout, R.string.error_no_internet, Snackbar.LENGTH_INDEFINITE);
 
-            snackbar.setAction("Retry", v -> {
+            snackbar.setAction(R.string.retry_button, v -> {
                 snackbar.dismiss();
                 showProgressBar();
                 silentSignIn();

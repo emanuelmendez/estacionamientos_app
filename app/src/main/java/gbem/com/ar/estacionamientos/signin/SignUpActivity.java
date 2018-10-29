@@ -19,13 +19,14 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 import butterknife.OnTextChanged;
-import gbem.com.ar.estacionamientos.MainActivity;
+import gbem.com.ar.estacionamientos.dashboard.NavigationDrawerActivity;
 import gbem.com.ar.estacionamientos.R;
 import gbem.com.ar.estacionamientos.api.dtos.UserDataDTO;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
+import static gbem.com.ar.estacionamientos.utils.Utils.USER_DATA_KEY;
 import static gbem.com.ar.estacionamientos.utils.Utils.getApp;
 
 public class SignUpActivity extends AppCompatActivity {
@@ -55,7 +56,7 @@ public class SignUpActivity extends AppCompatActivity {
         setContentView(R.layout.activity_sign_up);
         ButterKnife.bind(this);
 
-        userData = (UserDataDTO) Objects.requireNonNull(getIntent().getExtras()).get("user_data");
+        userData = (UserDataDTO) Objects.requireNonNull(getIntent().getExtras()).get(USER_DATA_KEY);
 
         txtHolaLabel.setText(getString(R.string.signup_hola, Objects.requireNonNull(userData)));
     }
@@ -70,7 +71,7 @@ public class SignUpActivity extends AppCompatActivity {
     @OnClick(R.id.btn_continuar)
     public void onContinuar() {
         if (txtPhone.getText().toString().isEmpty()) {
-            txtPhone.setError("Este campo es obligatorio");
+            txtPhone.setError(getString(R.string.error_phone_empty));
             return;
         } else {
             txtPhone.setError(null);
@@ -102,8 +103,8 @@ public class SignUpActivity extends AppCompatActivity {
         @Override
         public void onResponse(@NonNull Call<UserDataDTO> call, @NonNull Response<UserDataDTO> response) {
             if (response.isSuccessful()) {
-                final Intent intent = new Intent(SignUpActivity.this, MainActivity.class);
-                intent.putExtra("user_data", response.body());
+                final Intent intent = new Intent(SignUpActivity.this, NavigationDrawerActivity.class);
+                intent.putExtra(USER_DATA_KEY, response.body());
                 startActivity(intent);
                 finish();
             } else {
@@ -121,9 +122,9 @@ public class SignUpActivity extends AppCompatActivity {
 
         private void showRetryAction() {
             txtPhone.setEnabled(true);
-            final Snackbar snackbar = Snackbar.make(layout, "Error al realizar el registro", Snackbar.LENGTH_INDEFINITE);
+            final Snackbar snackbar = Snackbar.make(layout, R.string.error_signup_failed, Snackbar.LENGTH_INDEFINITE);
 
-            snackbar.setAction("Reintentar", v -> {
+            snackbar.setAction(R.string.retry_button, v -> {
                 snackbar.dismiss();
                 onContinuar();
             });

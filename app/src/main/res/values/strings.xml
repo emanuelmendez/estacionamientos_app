@@ -17,4 +17,11 @@
     <string name="signup_hola">¡Hola, %s!</string>
     <string name="signup_phone_ask">Necesitamos confirmar tu número de teléfono para poder continuar</string>
     <string name="signup_phone_placeholder">Número</string>
+    <string name="error_no_internet">Connectivity error</string>
+    <string name="retry_button">Retry</string>
+    <string name="error_signup_failed">Error al realizar el registro</string>
+    <string name="error_phone_empty">Este campo es obligatorio</string>
+    <string name="txt_reserva_en">Reserva en %s</string>
+    <string name="txt_usuario_reserva">Al usuario %s</string>
+    <string name="btn_ver_en_el_mapa">Ver en el mapa</string>
 </resources>
