@@ -40,6 +40,9 @@
             android:name=".dashboard.NavigationDrawerActivity"
             android:theme="@style/AppTheme.NoActionBar" />
         <activity android:name=".signin.SignUpActivity" />
+        <activity
+            android:name=".dashboard.ReservationInMapActivity"
+            android:label="@string/title_activity_reservation_in_map"></activity>
     </application>
 
 </manifest>

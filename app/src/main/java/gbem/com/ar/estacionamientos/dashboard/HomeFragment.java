@@ -160,7 +160,9 @@ public class HomeFragment extends Fragment {
 
     @OnClick(R.id.btnVerEnMapa)
     public void onClickVerEnMapa() {
-        startActivity(new Intent(getContext(), MapsActivity.class));
+        final Intent intent = new Intent(getContext(), ReservationInMapActivity.class);
+        intent.putExtra("RESERVATION_LOCATION", reservations.get(0));
+        startActivity(intent);
     }
 
 }
