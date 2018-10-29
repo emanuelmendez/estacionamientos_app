@@ -42,7 +42,7 @@
         <activity android:name=".signin.SignUpActivity" />
         <activity
             android:name=".dashboard.ReservationInMapActivity"
-            android:label="@string/title_activity_reservation_in_map"></activity>
+            android:label="@string/title_activity_reservation_in_map" />
     </application>
 
 </manifest>
