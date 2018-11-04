@@ -100,10 +100,10 @@
                 android:textColorLink="@color/cardview_light_background"
                 android:textSize="12sp"
                 android:visibility="gone"
-                tools:visibility="visible"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/divider" />
+                app:layout_constraintTop_toBottomOf="@+id/divider"
+                tools:visibility="visible" />
 
         </android.support.constraint.ConstraintLayout>
 
@@ -121,7 +121,8 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/cv_driver_reservations"
-        tools:cardCornerRadius="4dp">
+        tools:cardCornerRadius="4dp"
+        tools:visibility="visible">
 
         <TextView
             android:layout_width="match_parent"

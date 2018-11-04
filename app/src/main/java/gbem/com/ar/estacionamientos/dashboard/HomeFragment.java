@@ -29,6 +29,8 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
+import static android.view.View.GONE;
+import static android.view.View.VISIBLE;
 import static gbem.com.ar.estacionamientos.utils.Utils.USER_DATA_KEY;
 import static gbem.com.ar.estacionamientos.utils.Utils.getApp;
 
@@ -121,12 +123,12 @@ public class HomeFragment extends Fragment {
 
     @OnClick(R.id.cv_driver_reservations)
     public void onClickDriverCard() {
-        if (btnVerEnMapa.getVisibility() == View.GONE) {
-            btnVerEnMapa.setVisibility(View.VISIBLE);
-            btnCancelarReserva.setVisibility(View.VISIBLE);
+        if (btnVerEnMapa.getVisibility() == GONE) {
+            btnVerEnMapa.setVisibility(VISIBLE);
+            btnCancelarReserva.setVisibility(VISIBLE);
         } else {
-            btnVerEnMapa.setVisibility(View.GONE);
-            btnCancelarReserva.setVisibility(View.GONE);
+            btnVerEnMapa.setVisibility(GONE);
+            btnCancelarReserva.setVisibility(GONE);
         }
 
     }
@@ -136,11 +138,11 @@ public class HomeFragment extends Fragment {
         public void onResponse(@NonNull Call<ReservationDTO> call, @NonNull Response<ReservationDTO> response) {
             if (response.isSuccessful()) {
                 if (response.code() == 200) {
-                    cvDriverReservations.setVisibility(View.VISIBLE);
+                    cvDriverReservations.setVisibility(VISIBLE);
                     currentReservation = response.body();
 
                     if (currentReservation == null) {
-                        cvDriverReservations.setVisibility(View.GONE);
+                        cvDriverReservations.setVisibility(GONE);
                     }
 
                     txtReservaEn.setText(
@@ -149,9 +151,8 @@ public class HomeFragment extends Fragment {
 
                     txtUsuarioReserva.setText(getString(R.string.txt_usuario_reserva, currentReservation.getLenderName()));
                 } else {
-                    cvDriverReservations.setVisibility(View.GONE);
+                    cvDriverReservations.setVisibility(GONE);
                 }
-                Log.i(TAG, "onResponse: " + currentReservation.toString());
             } else {
                 Toast.makeText(getActivity(), "Error", Toast.LENGTH_SHORT).show();
             }
@@ -170,10 +171,10 @@ public class HomeFragment extends Fragment {
             if (response.isSuccessful()) {
                 occupiedLots.clear();
                 if (response.code() == 200) {
-                    cvLenderLots.setVisibility(View.VISIBLE);
+                    cvLenderLots.setVisibility(VISIBLE);
                     occupiedLots.addAll(response.body());
                 } else {
-                    cvLenderLots.setVisibility(View.GONE);
+                    cvLenderLots.setVisibility(GONE);
                 }
                 Log.i(TAG, "onResponse: " + occupiedLots.toString());
             } else {
