@@ -38,7 +38,6 @@ public class ReservationInMapActivity extends FragmentActivity implements OnMapR
     private FusedLocationProviderClient mFusedLocationProviderClient;
     private boolean mLocationPermissionGranted = false;
     private Location mLastKnownLocation;
-    private LatLng mDefaultLocation = new LatLng(-34.6037389, -58.3837644);
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -123,7 +122,7 @@ public class ReservationInMapActivity extends FragmentActivity implements OnMapR
                 getLocationPermission();
             }
         } catch (SecurityException e) {
-            Log.e("Exception: %s", e.getMessage());
+            Log.e(TAG, "Exception: " + e.getMessage());
         }
     }
 
@@ -148,14 +147,12 @@ public class ReservationInMapActivity extends FragmentActivity implements OnMapR
                         mMap.getUiSettings().setMyLocationButtonEnabled(true);
                     } else {
                         Log.d(TAG, "Current location is null. Using defaults.");
-                        Log.e(TAG, "Exception: %s", task.getException());
-                        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(mDefaultLocation, DEFAULT_ZOOM));
-                        mMap.getUiSettings().setMyLocationButtonEnabled(false);
+                        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(reservationLocation, DEFAULT_ZOOM));
                     }
                 });
             }
         } catch (SecurityException e) {
-            Log.e("Exception: %s", e.getMessage());
+            Log.e(TAG, "Exception: " + e.getMessage());
         }
         return true;
     }

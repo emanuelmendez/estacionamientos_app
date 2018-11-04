@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentActivity;
 import android.support.v7.widget.CardView;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -23,7 +24,6 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 import butterknife.Unbinder;
-import gbem.com.ar.estacionamientos.MapsActivity;
 import gbem.com.ar.estacionamientos.R;
 import gbem.com.ar.estacionamientos.api.dtos.UserDataDTO;
 import retrofit2.Call;
@@ -35,29 +35,24 @@ import static gbem.com.ar.estacionamientos.utils.Utils.getApp;
 
 public class HomeFragment extends Fragment {
 
-    private final List<ReservationDTO> reservations = new ArrayList<>();
+    private static final String TAG = HomeFragment.class.getSimpleName();
     private final List<ReservationDTO> occupiedLots = new ArrayList<>();
-
     @BindView(R.id.txtReservaEn)
     TextView txtReservaEn;
-
     @BindView(R.id.txtFechaReserva)
     TextView txtFechaReserva;
-
     @BindView(R.id.txtUsuarioReserva)
     TextView txtUsuarioReserva;
-
     @BindView(R.id.btnVerEnMapa)
     Button btnVerEnMapa;
-
     @BindView(R.id.cv_driver_reservations)
     CardView cvDriverReservations;
-
     @BindView(R.id.cv_lender_lots)
     CardView cvLenderLots;
-
+    private ReservationDTO currentReservation;
     private Unbinder unbinder;
     private UserDataDTO userData;
+    private DashboardService dashboardService;
 
     public HomeFragment() {
         // Required empty public constructor
@@ -68,6 +63,7 @@ public class HomeFragment extends Fragment {
         Bundle args = new Bundle();
         args.putSerializable(USER_DATA_KEY, userData);
         fragment.setArguments(args);
+
         return fragment;
     }
 
@@ -77,70 +73,22 @@ public class HomeFragment extends Fragment {
         if (getArguments() != null) {
             userData = (UserDataDTO) getArguments().getSerializable(USER_DATA_KEY);
             Objects.requireNonNull(userData);
-            Log.i("HOME_FRAGMENT", "onCreate: " + userData.getEmail());
+            Log.i(TAG, "onCreate: " + userData.getEmail());
         }
 
-        final DashboardService service = getApp(Objects.requireNonNull(getActivity())).getService(DashboardService.class);
-        final Call<List<ReservationDTO>> call =
-                service.getDriverReservations(getApp(getActivity()).getLastSignedInAccount().getIdToken());
+        final FragmentActivity activity = Objects.requireNonNull(getActivity());
 
-        Callback<List<ReservationDTO>> callback = new Callback<List<ReservationDTO>>() {
-            @Override
-            public void onResponse(@NonNull Call<List<ReservationDTO>> call, @NonNull Response<List<ReservationDTO>> response) {
-                if (response.isSuccessful()) {
-                    reservations.clear();
-                    if (response.code() == 200) {
-                        cvDriverReservations.setVisibility(View.VISIBLE);
-                        reservations.addAll(response.body());
-                        final ReservationDTO dto = reservations.get(0);
-                        txtReservaEn.setText(getString(R.string.txt_reserva_en, dto.getParkingLot().getStreetAddress()));
-                        txtFechaReserva.setText(
-                                new SimpleDateFormat("dd/MM HH:mm", Locale.getDefault()).format(dto.getFrom()));
-                        txtUsuarioReserva.setText(getString(R.string.txt_usuario_reserva, dto.getLenderName()));
-                    } else {
-                        cvDriverReservations.setVisibility(View.GONE);
-                    }
-                    Log.i("HOME_FRAGMENT", "onResponse: " + reservations.toString());
-                } else {
-                    Toast.makeText(getActivity(), "Error", Toast.LENGTH_SHORT).show();
-                }
-            }
+        if (dashboardService == null) {
+            dashboardService = getApp(activity).getService(DashboardService.class);
+        }
 
-            @Override
-            public void onFailure(@NonNull Call<List<ReservationDTO>> call, @NonNull Throwable t) {
-                Toast.makeText(getActivity(), "Error", Toast.LENGTH_SHORT).show();
-            }
-        };
-        call.enqueue(callback);
+        final Call<ReservationDTO> call =
+                dashboardService.getDriverCurrentReservation(getApp(activity).getLastSignedInAccount().getIdToken());
+        call.enqueue(new DriverLastReservationCallback());
 
         final Call<List<ReservationDTO>> call2 =
-                service.getLenderReservations(getApp(getActivity()).getLastSignedInAccount().getIdToken());
-
-        Callback<List<ReservationDTO>> callback2 = new Callback<List<ReservationDTO>>() {
-            @Override
-            public void onResponse(@NonNull Call<List<ReservationDTO>> call, @NonNull Response<List<ReservationDTO>> response) {
-                if (response.isSuccessful()) {
-                    occupiedLots.clear();
-                    if (response.code() == 200) {
-                        cvLenderLots.setVisibility(View.VISIBLE);
-                        occupiedLots.addAll(response.body());
-                    } else {
-                        cvLenderLots.setVisibility(View.GONE);
-                    }
-                    Log.i("HOME_FRAGMENT", "onResponse: " + occupiedLots.toString());
-                } else {
-                    Toast.makeText(getActivity(), "Error", Toast.LENGTH_SHORT).show();
-                }
-            }
-
-            @Override
-            public void onFailure(@NonNull Call<List<ReservationDTO>> call, @NonNull Throwable t) {
-                Toast.makeText(getActivity(), "Error", Toast.LENGTH_SHORT).show();
-            }
-        };
-        call2.enqueue(callback2);
-
-
+                dashboardService.getLenderReservations(getApp(activity).getLastSignedInAccount().getIdToken());
+        call2.enqueue(new LenderReservationsCallback());
     }
 
     @Override
@@ -157,12 +105,66 @@ public class HomeFragment extends Fragment {
         unbinder.unbind();
     }
 
-
     @OnClick(R.id.btnVerEnMapa)
     public void onClickVerEnMapa() {
         final Intent intent = new Intent(getContext(), ReservationInMapActivity.class);
-        intent.putExtra("RESERVATION_LOCATION", reservations.get(0));
+        intent.putExtra("RESERVATION_LOCATION", currentReservation);
         startActivity(intent);
     }
 
+    private class DriverLastReservationCallback implements Callback<ReservationDTO> {
+        @Override
+        public void onResponse(@NonNull Call<ReservationDTO> call, @NonNull Response<ReservationDTO> response) {
+            if (response.isSuccessful()) {
+                if (response.code() == 200) {
+                    cvDriverReservations.setVisibility(View.VISIBLE);
+                    currentReservation = response.body();
+
+                    if (currentReservation == null) {
+                        cvDriverReservations.setVisibility(View.GONE);
+                    }
+
+                    txtReservaEn.setText(
+                            getString(R.string.txt_reserva_en, currentReservation.getParkingLot().getStreetAddress()));
+                    txtFechaReserva.setText(SimpleDateFormat.getDateTimeInstance().format(currentReservation.getFrom()));
+
+                    txtUsuarioReserva.setText(getString(R.string.txt_usuario_reserva, currentReservation.getLenderName()));
+                } else {
+                    cvDriverReservations.setVisibility(View.GONE);
+                }
+                Log.i(TAG, "onResponse: " + currentReservation.toString());
+            } else {
+                Toast.makeText(getActivity(), "Error", Toast.LENGTH_SHORT).show();
+            }
+        }
+
+        @Override
+        public void onFailure(@NonNull Call<ReservationDTO> call, @NonNull Throwable t) {
+            Toast.makeText(getActivity(), "Error", Toast.LENGTH_SHORT).show();
+        }
+
+    }
+
+    private class LenderReservationsCallback implements Callback<List<ReservationDTO>> {
+        @Override
+        public void onResponse(@NonNull Call<List<ReservationDTO>> call, @NonNull Response<List<ReservationDTO>> response) {
+            if (response.isSuccessful()) {
+                occupiedLots.clear();
+                if (response.code() == 200) {
+                    cvLenderLots.setVisibility(View.VISIBLE);
+                    occupiedLots.addAll(response.body());
+                } else {
+                    cvLenderLots.setVisibility(View.GONE);
+                }
+                Log.i(TAG, "onResponse: " + occupiedLots.toString());
+            } else {
+                Toast.makeText(getActivity(), "Error", Toast.LENGTH_SHORT).show();
+            }
+        }
+
+        @Override
+        public void onFailure(@NonNull Call<List<ReservationDTO>> call, @NonNull Throwable t) {
+            Toast.makeText(getActivity(), "Error", Toast.LENGTH_SHORT).show();
+        }
+    }
 }

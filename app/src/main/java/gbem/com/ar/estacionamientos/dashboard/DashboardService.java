@@ -12,8 +12,8 @@ import retrofit2.http.Header;
  */
 interface DashboardService {
 
-    @GET("reservations/driver")
-    Call<List<ReservationDTO>> getDriverReservations(@Header("api_token") String token);
+    @GET("reservations/driver/current")
+    Call<ReservationDTO> getDriverCurrentReservation(@Header("api_token") String token);
 
     @GET("reservations/lender")
     Call<List<ReservationDTO>> getLenderReservations(@Header("api_token") String token);
