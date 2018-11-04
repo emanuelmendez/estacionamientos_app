@@ -10,7 +10,7 @@
     <android.support.v7.widget.CardView
         android:id="@+id/cv_driver_reservations"
         android:layout_width="match_parent"
-        android:layout_height="100dp"
+        android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
         android:layout_marginTop="8dp"
         android:layout_marginEnd="8dp"
@@ -18,12 +18,15 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        tools:cardCornerRadius="4dp">
+        tools:cardCornerRadius="4dp"
+        tools:visibility="visible">
 
         <android.support.constraint.ConstraintLayout
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_margin="10dp">
+            android:layout_height="wrap_content"
+            android:layout_margin="10dp"
+            android:animateLayoutChanges="true"
+            tools:visibility="visible">
 
             <TextView
                 android:id="@+id/txtReservaEn"
@@ -33,7 +36,9 @@
                 android:layout_marginTop="8dp"
                 app:layout_constraintBottom_toTopOf="@+id/txtFechaReserva"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent" />
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintVertical_chainStyle="spread_inside"
+                tools:text="Lugar de reserva" />
 
             <TextView
                 android:id="@+id/txtFechaReserva"
@@ -42,7 +47,8 @@
                 android:layout_marginStart="8dp"
                 app:layout_constraintBottom_toTopOf="@+id/txtUsuarioReserva"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/txtReservaEn" />
+                app:layout_constraintTop_toBottomOf="@+id/txtReservaEn"
+                tools:text="10/11 23:00" />
 
             <TextView
                 android:id="@+id/txtUsuarioReserva"
@@ -52,7 +58,18 @@
                 android:layout_marginBottom="8dp"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/txtFechaReserva" />
+                app:layout_constraintTop_toBottomOf="@+id/txtFechaReserva"
+                tools:text="Usuario" />
+
+            <View
+                android:id="@+id/divider"
+                android:layout_width="10dp"
+                android:layout_height="1dp"
+                android:layout_margin="8dp"
+                android:background="?android:attr/listDivider"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/txtUsuarioReserva" />
 
             <Button
                 android:id="@+id/btnVerEnMapa"
@@ -64,9 +81,29 @@
                 android:layout_marginBottom="8dp"
                 android:text="@string/btn_ver_en_el_mapa"
                 android:textSize="12sp"
+                android:visibility="gone"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintTop_toTopOf="parent" />
+                app:layout_constraintTop_toBottomOf="@+id/divider"
+                tools:visibility="visible" />
+
+
+            <Button
+                android:id="@+id/btnCancelarReserva"
+                style="@style/Widget.AppCompat.Button.Colored"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:layout_marginBottom="8dp"
+                android:backgroundTint="@android:color/holo_red_dark"
+                android:text="@string/cancel_reservation"
+                android:textColorLink="@color/cardview_light_background"
+                android:textSize="12sp"
+                android:visibility="gone"
+                tools:visibility="visible"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/divider" />
 
         </android.support.constraint.ConstraintLayout>
 

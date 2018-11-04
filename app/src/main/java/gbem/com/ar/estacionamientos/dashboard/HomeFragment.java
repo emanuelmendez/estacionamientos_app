@@ -17,7 +17,6 @@ import android.widget.Toast;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Locale;
 import java.util.Objects;
 
 import butterknife.BindView;
@@ -45,6 +44,8 @@ public class HomeFragment extends Fragment {
     TextView txtUsuarioReserva;
     @BindView(R.id.btnVerEnMapa)
     Button btnVerEnMapa;
+    @BindView(R.id.btnCancelarReserva)
+    Button btnCancelarReserva;
     @BindView(R.id.cv_driver_reservations)
     CardView cvDriverReservations;
     @BindView(R.id.cv_lender_lots)
@@ -110,6 +111,24 @@ public class HomeFragment extends Fragment {
         final Intent intent = new Intent(getContext(), ReservationInMapActivity.class);
         intent.putExtra("RESERVATION_LOCATION", currentReservation);
         startActivity(intent);
+    }
+
+    @OnClick(R.id.btnCancelarReserva)
+    public void onClickCancelarReserva() {
+        // TODO cancelar
+        Log.i(TAG, "Cancelar reserva");
+    }
+
+    @OnClick(R.id.cv_driver_reservations)
+    public void onClickDriverCard() {
+        if (btnVerEnMapa.getVisibility() == View.GONE) {
+            btnVerEnMapa.setVisibility(View.VISIBLE);
+            btnCancelarReserva.setVisibility(View.VISIBLE);
+        } else {
+            btnVerEnMapa.setVisibility(View.GONE);
+            btnCancelarReserva.setVisibility(View.GONE);
+        }
+
     }
 
     private class DriverLastReservationCallback implements Callback<ReservationDTO> {

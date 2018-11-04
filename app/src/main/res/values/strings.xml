@@ -25,4 +25,5 @@
     <string name="txt_usuario_reserva">Al usuario %s</string>
     <string name="btn_ver_en_el_mapa">Ver en el mapa</string>
     <string name="title_activity_reservation_in_map">Map</string>
+    <string name="cancel_reservation">Cancelar Reserva</string>
 </resources>
