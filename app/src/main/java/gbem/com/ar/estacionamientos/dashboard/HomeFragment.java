@@ -6,6 +6,10 @@ import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.support.v7.widget.CardView;
+import android.support.v7.widget.DefaultItemAnimator;
+import android.support.v7.widget.DividerItemDecoration;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -25,19 +29,24 @@ import butterknife.OnClick;
 import butterknife.Unbinder;
 import gbem.com.ar.estacionamientos.R;
 import gbem.com.ar.estacionamientos.api.dtos.UserDataDTO;
+import gbem.com.ar.estacionamientos.dashboard.lender.SolicitudListener;
+import gbem.com.ar.estacionamientos.dashboard.lender.SolicitudesAdapter;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
 import static android.view.View.GONE;
 import static android.view.View.VISIBLE;
+import static gbem.com.ar.estacionamientos.utils.Utils.RESERVATION_LOCATION;
 import static gbem.com.ar.estacionamientos.utils.Utils.USER_DATA_KEY;
 import static gbem.com.ar.estacionamientos.utils.Utils.getApp;
+import static gbem.com.ar.estacionamientos.utils.Utils.getIdToken;
 
-public class HomeFragment extends Fragment {
+public class HomeFragment extends Fragment implements SolicitudListener {
 
     private static final String TAG = HomeFragment.class.getSimpleName();
     private final List<ReservationDTO> occupiedLots = new ArrayList<>();
+
     @BindView(R.id.txtReservaEn)
     TextView txtReservaEn;
     @BindView(R.id.txtFechaReserva)
@@ -52,6 +61,10 @@ public class HomeFragment extends Fragment {
     CardView cvDriverReservations;
     @BindView(R.id.cv_lender_lots)
     CardView cvLenderLots;
+    @BindView(R.id.rvSolicitudes)
+    RecyclerView rvSolicitudes;
+
+    private SolicitudesAdapter adapter;
     private ReservationDTO currentReservation;
     private Unbinder unbinder;
     private UserDataDTO userData;
@@ -79,19 +92,6 @@ public class HomeFragment extends Fragment {
             Log.i(TAG, "onCreate: " + userData.getEmail());
         }
 
-        final FragmentActivity activity = Objects.requireNonNull(getActivity());
-
-        if (dashboardService == null) {
-            dashboardService = getApp(activity).getService(DashboardService.class);
-        }
-
-        final Call<ReservationDTO> call =
-                dashboardService.getDriverCurrentReservation(getApp(activity).getLastSignedInAccount().getIdToken());
-        call.enqueue(new DriverLastReservationCallback());
-
-        final Call<List<ReservationDTO>> call2 =
-                dashboardService.getLenderReservations(getApp(activity).getLastSignedInAccount().getIdToken());
-        call2.enqueue(new LenderReservationsCallback());
     }
 
     @Override
@@ -99,6 +99,28 @@ public class HomeFragment extends Fragment {
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_home, container, false);
         unbinder = ButterKnife.bind(this, view);
+
+        final FragmentActivity activity = Objects.requireNonNull(getActivity());
+
+        rvSolicitudes.setLayoutManager(new LinearLayoutManager(activity));
+        rvSolicitudes.setItemAnimator(new DefaultItemAnimator());
+        rvSolicitudes.addItemDecoration(new DividerItemDecoration(activity, LinearLayoutManager.VERTICAL));
+
+        adapter = new SolicitudesAdapter(occupiedLots, this);
+        rvSolicitudes.setAdapter(adapter);
+
+        if (dashboardService == null) {
+            dashboardService = getApp(activity).getService(DashboardService.class);
+        }
+
+        final Call<ReservationDTO> call =
+                dashboardService.getDriverCurrentReservation(getIdToken(activity));
+        call.enqueue(new DriverLastReservationCallback());
+
+        final Call<List<ReservationDTO>> call2 =
+                dashboardService.getLenderReservations(getIdToken(activity));
+        call2.enqueue(new LenderReservationsCallback());
+
         return view;
     }
 
@@ -111,14 +133,28 @@ public class HomeFragment extends Fragment {
     @OnClick(R.id.btnVerEnMapa)
     public void onClickVerEnMapa() {
         final Intent intent = new Intent(getContext(), ReservationInMapActivity.class);
-        intent.putExtra("RESERVATION_LOCATION", currentReservation);
+        intent.putExtra(RESERVATION_LOCATION, currentReservation);
         startActivity(intent);
     }
 
     @OnClick(R.id.btnCancelarReserva)
     public void onClickCancelarReserva() {
-        // TODO cancelar
-        Log.i(TAG, "Cancelar reserva");
+        final Call<Void> call =
+                dashboardService.cancelCurrentReservation(getIdToken(Objects.requireNonNull(getActivity())), currentReservation.getId());
+        call.enqueue(new Callback<Void>() {
+            @Override
+            public void onResponse(@NonNull Call<Void> call, @NonNull Response<Void> response) {
+                if (response.isSuccessful())
+                    Toast.makeText(getActivity(), "Cancelada", Toast.LENGTH_SHORT).show();
+                else
+                    Toast.makeText(getActivity(), "Error al cancelar", Toast.LENGTH_SHORT).show();
+            }
+
+            @Override
+            public void onFailure(@NonNull Call<Void> call, @NonNull Throwable t) {
+                Toast.makeText(getActivity(), "Cancelar Failure", Toast.LENGTH_SHORT).show();
+            }
+        });
     }
 
     @OnClick(R.id.cv_driver_reservations)
@@ -130,6 +166,47 @@ public class HomeFragment extends Fragment {
             btnVerEnMapa.setVisibility(GONE);
             btnCancelarReserva.setVisibility(GONE);
         }
+
+    }
+
+    @Override
+    public void onConfirmar(ReservationDTO reservation) {
+        Log.d(TAG, "onConfirmar: " + reservation);
+        final Call<Void> call = dashboardService.acceptReservation(getIdToken(Objects.requireNonNull(getActivity())), reservation.getId());
+        call.enqueue(new Callback<Void>() {
+            @Override
+            public void onResponse(@NonNull Call<Void> call, @NonNull Response<Void> response) {
+                if (response.isSuccessful())
+                    Toast.makeText(getActivity(), "Accepted", Toast.LENGTH_SHORT).show();
+                else
+                    Toast.makeText(getActivity(), "Confirmation error", Toast.LENGTH_SHORT).show();
+            }
+
+            @Override
+            public void onFailure(@NonNull Call<Void> call, @NonNull Throwable t) {
+                Toast.makeText(getActivity(), "Confirmation Failure", Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
+
+    @Override
+    public void onCancelar(ReservationDTO reservation) {
+        Log.d(TAG, "onCancelar: " + reservation);
+        final Call<Void> call = dashboardService.rejectOrCancelLenderReservation(getIdToken(Objects.requireNonNull(getActivity())), reservation.getId());
+        call.enqueue(new Callback<Void>() {
+            @Override
+            public void onResponse(@NonNull Call<Void> call, @NonNull Response<Void> response) {
+                if (response.isSuccessful())
+                    Toast.makeText(getActivity(), "Rejected...", Toast.LENGTH_SHORT).show();
+                else
+                    Toast.makeText(getActivity(), "Rejection error", Toast.LENGTH_SHORT).show();
+            }
+
+            @Override
+            public void onFailure(@NonNull Call<Void> call, @NonNull Throwable t) {
+                Toast.makeText(getActivity(), "Rejection Failure", Toast.LENGTH_SHORT).show();
+            }
+        });
 
     }
 
@@ -173,6 +250,8 @@ public class HomeFragment extends Fragment {
                 if (response.code() == 200) {
                     cvLenderLots.setVisibility(VISIBLE);
                     occupiedLots.addAll(response.body());
+
+                    adapter.setData(occupiedLots);
                 } else {
                     cvLenderLots.setVisibility(GONE);
                 }

@@ -26,4 +26,8 @@
     <string name="btn_ver_en_el_mapa">Ver en el mapa</string>
     <string name="title_activity_reservation_in_map">Map</string>
     <string name="cancel_reservation">Cancelar Reserva</string>
+    <string name="solicitudes_pendientes">Solicitudes pendientes</string>
+    <string name="proxima_reserva">Próxima reserva</string>
+    <string name="btn_confirmar">Confirmar</string>
+    <string name="btn_rechazar">Rechazar</string>
 </resources>

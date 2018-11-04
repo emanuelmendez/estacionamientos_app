@@ -26,6 +26,7 @@ import java.util.Objects;
 import gbem.com.ar.estacionamientos.R;
 
 import static android.Manifest.permission.ACCESS_FINE_LOCATION;
+import static gbem.com.ar.estacionamientos.utils.Utils.RESERVATION_LOCATION;
 
 public class ReservationInMapActivity extends FragmentActivity implements OnMapReadyCallback {
 
@@ -44,7 +45,7 @@ public class ReservationInMapActivity extends FragmentActivity implements OnMapR
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_reservation_in_map);
 
-        reservation = (ReservationDTO) Objects.requireNonNull(getIntent().getExtras()).get("RESERVATION_LOCATION");
+        reservation = (ReservationDTO) Objects.requireNonNull(getIntent().getExtras()).get(RESERVATION_LOCATION);
 
         getLocationPermission();
 

@@ -9,7 +9,7 @@ import gbem.com.ar.estacionamientos.api.dtos.ParkingLotResultDTO;
  * @author pielreloj
  * Created: 28/10/18.
  */
-final class ReservationDTO implements Serializable {
+public class ReservationDTO implements Serializable {
 
 
     private static final long serialVersionUID = -659632028731541922L;
@@ -110,4 +110,5 @@ final class ReservationDTO implements Serializable {
                 ", status='" + status + '\'' +
                 '}';
     }
+
 }

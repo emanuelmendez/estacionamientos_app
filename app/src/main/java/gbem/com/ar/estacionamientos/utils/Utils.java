@@ -11,6 +11,9 @@ import gbem.com.ar.estacionamientos.EstacionamientosApp;
  */
 public final class Utils {
 
+    public static final String USER_DATA_KEY = "user_data";
+    public static final String RESERVATION_LOCATION = "reservation_location";
+
     /**
      * Método para reducir el código necesario para obtener la instancia de la app
      *
@@ -22,6 +25,9 @@ public final class Utils {
         return (EstacionamientosApp) activity.getApplication();
     }
 
-    public static final String USER_DATA_KEY = "user_data";
+    public static String getIdToken(@NonNull Activity activity) {
+        return getApp(activity).getLastSignedInAccount().getIdToken();
+    }
+
 
 }
