@@ -3,6 +3,8 @@ package gbem.com.ar.estacionamientos.utils;
 import android.app.Activity;
 import android.support.annotation.NonNull;
 
+import com.google.android.gms.maps.model.LatLng;
+
 import gbem.com.ar.estacionamientos.EstacionamientosApp;
 
 /**
@@ -29,5 +31,17 @@ public final class Utils {
         return getApp(activity).getLastSignedInAccount().getIdToken();
     }
 
+    /**
+     * Construye un objeto LatLng desde un string de coordenadas
+     * @param coordinates coordenadas con formato "lat,lng"
+     * @return LatLng usado en Google Maps
+     */
+    public static LatLng createLatLng(@NonNull String coordinates) {
+        final String[] split = coordinates.split(",");
+        final double lat = Double.parseDouble(split[0]);
+        final double lng = Double.parseDouble(split[1]);
+
+        return new LatLng(lat, lng);
+    }
 
 }

@@ -30,6 +30,6 @@ public interface ISearchService {
     Call<List<ParkingLotResultDTO>> searchNear(@Header("api_token") String token,
                                                @Query("latitude") double latitude,
                                                @Query("longitude") double longitude,
-                                               @Query("ratio") int ratio);
+                                               @Query("ratio") double ratio);
 
 }

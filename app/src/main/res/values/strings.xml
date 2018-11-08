@@ -30,4 +30,10 @@
     <string name="proxima_reserva">Próxima reserva</string>
     <string name="btn_confirmar">Confirmar</string>
     <string name="btn_rechazar">Rechazar</string>
+    <string name="btn_center_at_parking_lot">Centrar el mapa en el estacionamiento</string>
+    <string name="buscar_un_estacionamiento">Buscar cerca de una ubicación</string>
+    <string name="calle_altura_ciudad">Calle, altura, ciudad</string>
+    <string name="buscar">Buscar</string>
+    <string name="location_search_error">Hubo un error al preguntar por esta dirección. Intentá más tarde</string>
+    <string name="location_search_not_found">No se encontró esa dirección, ¿Estás seguro que es correcta?</string>
 </resources>

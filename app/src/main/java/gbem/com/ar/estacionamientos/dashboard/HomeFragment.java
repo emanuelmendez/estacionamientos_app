@@ -4,7 +4,6 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentActivity;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.DividerItemDecoration;
@@ -100,26 +99,21 @@ public class HomeFragment extends Fragment implements SolicitudListener {
         View view = inflater.inflate(R.layout.fragment_home, container, false);
         unbinder = ButterKnife.bind(this, view);
 
-        final FragmentActivity activity = Objects.requireNonNull(getActivity());
+        Objects.requireNonNull(getActivity());
 
-        rvSolicitudes.setLayoutManager(new LinearLayoutManager(activity));
+        rvSolicitudes.setFocusable(false);
+        rvSolicitudes.setLayoutManager(new LinearLayoutManager(getActivity()));
         rvSolicitudes.setItemAnimator(new DefaultItemAnimator());
-        rvSolicitudes.addItemDecoration(new DividerItemDecoration(activity, LinearLayoutManager.VERTICAL));
+        rvSolicitudes.addItemDecoration(new DividerItemDecoration(getActivity(), LinearLayoutManager.VERTICAL));
 
         adapter = new SolicitudesAdapter(occupiedLots, this);
         rvSolicitudes.setAdapter(adapter);
 
-        if (dashboardService == null) {
-            dashboardService = getApp(activity).getService(DashboardService.class);
-        }
+        if (dashboardService == null)
+            dashboardService = getApp(getActivity()).getService(DashboardService.class);
 
-        final Call<ReservationDTO> call =
-                dashboardService.getDriverCurrentReservation(getIdToken(activity));
-        call.enqueue(new DriverLastReservationCallback());
-
-        final Call<List<ReservationDTO>> call2 =
-                dashboardService.getLenderReservations(getIdToken(activity));
-        call2.enqueue(new LenderReservationsCallback());
+        dashboardService.getDriverCurrentReservation(getIdToken(getActivity())).enqueue(new DriverLastReservationCallback());
+        dashboardService.getLenderReservations(getIdToken(getActivity())).enqueue(new LenderReservationsCallback());
 
         return view;
     }
@@ -139,22 +133,22 @@ public class HomeFragment extends Fragment implements SolicitudListener {
 
     @OnClick(R.id.btnCancelarReserva)
     public void onClickCancelarReserva() {
-        final Call<Void> call =
-                dashboardService.cancelCurrentReservation(getIdToken(Objects.requireNonNull(getActivity())), currentReservation.getId());
-        call.enqueue(new Callback<Void>() {
-            @Override
-            public void onResponse(@NonNull Call<Void> call, @NonNull Response<Void> response) {
-                if (response.isSuccessful())
-                    Toast.makeText(getActivity(), "Cancelada", Toast.LENGTH_SHORT).show();
-                else
-                    Toast.makeText(getActivity(), "Error al cancelar", Toast.LENGTH_SHORT).show();
-            }
+        Objects.requireNonNull(getActivity());
+        dashboardService.cancelCurrentReservation(getIdToken(getActivity()), currentReservation.getId())
+                .enqueue(new Callback<Void>() {
+                    @Override
+                    public void onResponse(@NonNull Call<Void> call, @NonNull Response<Void> response) {
+                        if (response.isSuccessful())
+                            Toast.makeText(getActivity(), "Cancelada", Toast.LENGTH_SHORT).show();
+                        else
+                            Toast.makeText(getActivity(), "Error al cancelar", Toast.LENGTH_SHORT).show();
+                    }
 
-            @Override
-            public void onFailure(@NonNull Call<Void> call, @NonNull Throwable t) {
-                Toast.makeText(getActivity(), "Cancelar Failure", Toast.LENGTH_SHORT).show();
-            }
-        });
+                    @Override
+                    public void onFailure(@NonNull Call<Void> call, @NonNull Throwable t) {
+                        Toast.makeText(getActivity(), "Cancelar Failure", Toast.LENGTH_SHORT).show();
+                    }
+                });
     }
 
     @OnClick(R.id.cv_driver_reservations)
@@ -166,48 +160,48 @@ public class HomeFragment extends Fragment implements SolicitudListener {
             btnVerEnMapa.setVisibility(GONE);
             btnCancelarReserva.setVisibility(GONE);
         }
-
     }
 
     @Override
     public void onConfirmar(ReservationDTO reservation) {
         Log.d(TAG, "onConfirmar: " + reservation);
-        final Call<Void> call = dashboardService.acceptReservation(getIdToken(Objects.requireNonNull(getActivity())), reservation.getId());
-        call.enqueue(new Callback<Void>() {
-            @Override
-            public void onResponse(@NonNull Call<Void> call, @NonNull Response<Void> response) {
-                if (response.isSuccessful())
-                    Toast.makeText(getActivity(), "Accepted", Toast.LENGTH_SHORT).show();
-                else
-                    Toast.makeText(getActivity(), "Confirmation error", Toast.LENGTH_SHORT).show();
-            }
+        Objects.requireNonNull(getActivity());
+        dashboardService.acceptReservation(getIdToken(getActivity()), reservation.getId())
+                .enqueue(new Callback<Void>() {
+                    @Override
+                    public void onResponse(@NonNull Call<Void> call, @NonNull Response<Void> response) {
+                        if (response.isSuccessful())
+                            Toast.makeText(getActivity(), "Accepted", Toast.LENGTH_SHORT).show();
+                        else
+                            Toast.makeText(getActivity(), "Confirmation error", Toast.LENGTH_SHORT).show();
+                    }
 
-            @Override
-            public void onFailure(@NonNull Call<Void> call, @NonNull Throwable t) {
-                Toast.makeText(getActivity(), "Confirmation Failure", Toast.LENGTH_SHORT).show();
-            }
-        });
+                    @Override
+                    public void onFailure(@NonNull Call<Void> call, @NonNull Throwable t) {
+                        Toast.makeText(getActivity(), "Confirmation Failure", Toast.LENGTH_SHORT).show();
+                    }
+                });
     }
 
     @Override
     public void onCancelar(ReservationDTO reservation) {
         Log.d(TAG, "onCancelar: " + reservation);
-        final Call<Void> call = dashboardService.rejectOrCancelLenderReservation(getIdToken(Objects.requireNonNull(getActivity())), reservation.getId());
-        call.enqueue(new Callback<Void>() {
-            @Override
-            public void onResponse(@NonNull Call<Void> call, @NonNull Response<Void> response) {
-                if (response.isSuccessful())
-                    Toast.makeText(getActivity(), "Rejected...", Toast.LENGTH_SHORT).show();
-                else
-                    Toast.makeText(getActivity(), "Rejection error", Toast.LENGTH_SHORT).show();
-            }
+        Objects.requireNonNull(getActivity());
+        dashboardService.rejectOrCancelLenderReservation(getIdToken(getActivity()), reservation.getId())
+                .enqueue(new Callback<Void>() {
+                    @Override
+                    public void onResponse(@NonNull Call<Void> call, @NonNull Response<Void> response) {
+                        if (response.isSuccessful())
+                            Toast.makeText(getActivity(), "Rejected...", Toast.LENGTH_SHORT).show();
+                        else
+                            Toast.makeText(getActivity(), "Rejection error", Toast.LENGTH_SHORT).show();
+                    }
 
-            @Override
-            public void onFailure(@NonNull Call<Void> call, @NonNull Throwable t) {
-                Toast.makeText(getActivity(), "Rejection Failure", Toast.LENGTH_SHORT).show();
-            }
-        });
-
+                    @Override
+                    public void onFailure(@NonNull Call<Void> call, @NonNull Throwable t) {
+                        Toast.makeText(getActivity(), "Rejection Failure", Toast.LENGTH_SHORT).show();
+                    }
+                });
     }
 
     private class DriverLastReservationCallback implements Callback<ReservationDTO> {
