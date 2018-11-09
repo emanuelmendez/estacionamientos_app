@@ -22,12 +22,14 @@
 
     <android.support.design.widget.TextInputLayout
         android:id="@+id/txtDireccion"
-        android:layout_width="315dp"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
-        android:layout_marginTop="8dp"
+        android:layout_marginTop="32dp"
+        android:layout_marginEnd="8dp"
+        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/txtSearchTitle">
+        app:layout_constraintTop_toBottomOf="@+id/swUseMyLocation">
 
         <android.support.design.widget.TextInputEditText
             android:id="@+id/etDireccion"
@@ -43,27 +45,145 @@
         style="@android:style/Widget.Material.Button.Borderless.Colored"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginTop="8dp"
-        android:layout_marginEnd="8dp"
-        android:text="@string/buscar"
-        android:textSize="12sp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@+id/txtDireccion"
-        app:layout_constraintTop_toBottomOf="@+id/txtSearchTitle" />
-
-    <fragment
-        android:id="@+id/mapSearchView"
-        android:name="com.google.android.gms.maps.SupportMapFragment"
-        android:layout_width="0dp"
-        android:layout_height="0dp"
         android:layout_marginStart="8dp"
         android:layout_marginTop="8dp"
         android:layout_marginEnd="8dp"
         android:layout_marginBottom="8dp"
-        android:visibility="visible"
+        android:text="@string/buscar"
+        android:textSize="12sp"
         app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/etCantidadHoras" />
+
+    <Switch
+        android:id="@+id/swUseMyLocation"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="16dp"
+        android:layout_marginEnd="8dp"
+        android:lineSpacingExtra="18sp"
+        android:text="@string/use_my_location"
+        android:textSize="18sp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/txtIngreseDireccion" />
+
+    <TextView
+        android:id="@+id/txtIngreseDireccion"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="32dp"
+        android:layout_marginEnd="8dp"
+        android:text="@string/title_address_search_input"
+        android:textAppearance="@style/TextAppearance.AppCompat.Subhead"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/txtSearchTitle" />
+
+    <TextView
+        android:id="@+id/txtTitleFechaHora"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="32dp"
+        android:layout_marginEnd="8dp"
+        android:paddingBottom="24dp"
+        android:text="@string/title_when"
+        android:textAppearance="@style/TextAppearance.AppCompat.Subhead"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/txtDireccion" />
+
+    <Button
+        android:id="@+id/txtDia"
+        style="@android:style/Widget.Material.Button.Borderless.Colored"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:layout_marginEnd="8dp"
+        android:text="@string/btn_set_date"
+        app:layout_constraintBottom_toBottomOf="@+id/txtTitleDia"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toEndOf="@+id/txtTitleDia"
+        app:layout_constraintTop_toTopOf="@+id/txtTitleDia" />
+
+    <Button
+        android:id="@+id/txtHora"
+        style="@android:style/Widget.Material.Button.Borderless.Colored"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:layout_marginEnd="8dp"
+        android:text="@string/btn_set_time"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toEndOf="@+id/txtTitleHora"
+        app:layout_constraintTop_toBottomOf="@+id/txtDia" />
+
+    <TextView
+        android:id="@+id/txtTitleDia"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="8dp"
+        android:text="@string/date"
+        android:textSize="18sp"
+        app:layout_constraintEnd_toStartOf="@+id/txtDia"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintHorizontal_chainStyle="packed"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/txtTitleFechaHora" />
+
+    <TextView
+        android:id="@+id/txtTitleHora"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="8dp"
+        android:text="@string/time"
+        android:textSize="18sp"
+        app:layout_constraintBottom_toBottomOf="@+id/txtHora"
+        app:layout_constraintEnd_toStartOf="@+id/txtHora"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintHorizontal_chainStyle="spread_inside"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/txtHora" />
+
+    <TextView
+        android:id="@+id/txtCantidadHoras"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="8dp"
+        android:text="@string/duration_in_hours"
+        android:textSize="18sp"
+        app:layout_constraintBottom_toBottomOf="@+id/etCantidadHoras"
+        app:layout_constraintEnd_toStartOf="@+id/etCantidadHoras"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintHorizontal_chainStyle="spread_inside"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/etCantidadHoras" />
+
+    <EditText
+        android:id="@+id/etCantidadHoras"
+        android:layout_width="195dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:layout_marginEnd="8dp"
+        android:ems="10"
+        android:importantForAutofill="no"
+        android:inputType="number"
+        android:maxLines="1"
+        android:textSize="18sp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toEndOf="@+id/txtCantidadHoras"
+        app:layout_constraintTop_toBottomOf="@+id/txtHora"
+        tools:ignore="LabelFor,UnusedAttribute" />
 
 </android.support.constraint.ConstraintLayout>
