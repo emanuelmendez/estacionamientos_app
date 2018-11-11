@@ -10,6 +10,7 @@ import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
@@ -18,6 +19,8 @@ import java.util.Date;
 import java.util.List;
 import java.util.Objects;
 
+import butterknife.ButterKnife;
+import butterknife.OnClick;
 import gbem.com.ar.estacionamientos.R;
 import gbem.com.ar.estacionamientos.api.dtos.ParkingLotResultDTO;
 import gbem.com.ar.estacionamientos.api.rest.ISearchService;
@@ -30,6 +33,7 @@ import static gbem.com.ar.estacionamientos.utils.Utils.getIdToken;
 
 public class MapsActivity extends FragmentActivity implements OnMapReadyCallback {
 
+    private static final float DEFAULT_ZOOM = 16.0f;
     private static final String TAG = MapsActivity.class.getSimpleName();
     private GoogleMap mMap;
     private ISearchService searchService;
@@ -42,6 +46,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_maps);
+        ButterKnife.bind(this);
 
         final Bundle extras = Objects.requireNonNull(getIntent().getExtras());
         location = (LatLng) extras.get("location");
@@ -60,14 +65,19 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     @Override
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
-        mMap.animateCamera(
-                CameraUpdateFactory.newCameraPosition(
-                        CameraPosition.fromLatLngZoom(location, 15.0F)));
 
-        mMap.setOnMapClickListener(latLng -> searchNear());
+        mMap.addMarker(new MarkerOptions()
+                .title("Punto de búsqueda")
+                .position(location)
+                .visible(true)
+                .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_AZURE)));
+
+        centerCameraAt(location);
+
+        findPlaces();
     }
 
-    private void searchNear() {
+    private void findPlaces() {
         searchService
                 .searchNear(getIdToken(this),
                         location.latitude, location.longitude, ratio,
@@ -99,5 +109,22 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
                 });
     }
+
+    @OnClick(R.id.btn_options)
+    public void onChangeOptions() {
+        super.onBackPressed();
+    }
+
+    @OnClick(R.id.btn_center_on_location)
+    public void onBtnCenterClick() {
+        centerCameraAt(location);
+    }
+
+    private void centerCameraAt(final LatLng latlng) {
+        mMap.animateCamera(
+                CameraUpdateFactory.newCameraPosition(
+                        CameraPosition.fromLatLngZoom(latlng, DEFAULT_ZOOM)));
+    }
+
 
 }

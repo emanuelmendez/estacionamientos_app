@@ -115,8 +115,8 @@ public class SearchFragment extends FragmentActivity {
         btnSearch.setEnabled(!checked);
         if (checked) {
             if (isLocationPermissionGranted()) {
-                etDireccion.setVisibility(View.INVISIBLE);
-                txtDireccion.setVisibility(View.INVISIBLE);
+                etDireccion.setVisibility(View.GONE);
+                txtDireccion.setVisibility(View.GONE);
             } else {
                 ActivityCompat.requestPermissions(this,
                         new String[]{ACCESS_FINE_LOCATION},
@@ -145,8 +145,8 @@ public class SearchFragment extends FragmentActivity {
         if (requestCode == PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION
                 && grantResults.length > 0
                 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-            txtDireccion.setVisibility(View.INVISIBLE);
-            etDireccion.setVisibility(View.INVISIBLE);
+            txtDireccion.setVisibility(View.GONE);
+            etDireccion.setVisibility(View.GONE);
         } else {
             txtDireccion.setVisibility(View.VISIBLE);
             etDireccion.setVisibility(View.VISIBLE);
