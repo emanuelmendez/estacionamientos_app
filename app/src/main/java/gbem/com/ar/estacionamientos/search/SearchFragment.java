@@ -164,7 +164,8 @@ public class SearchFragment extends FragmentActivity {
         } else if (!timeSetListener.isTimeSetted) {
             txtHora.setError("Indica la hora");
             return;
-        } else if (etCantidadHoras.getText().length() == 0) {
+        } else if (etCantidadHoras.getText().length() == 0
+                || etCantidadHoras.getText().toString().equals("0")) {
             etCantidadHoras.setError("Campo requerido");
             return;
         } else {
@@ -217,14 +218,42 @@ public class SearchFragment extends FragmentActivity {
             centerLocation = new LatLng(address.getLatitude(), address.getLongitude());
         }
 
-        double ratio = Double.parseDouble((String) spinnerRadio.getSelectedItem()) / 1000;
+        int ratioInMeters = Integer.parseInt(spinnerRadio.getSelectedItem().toString());
+        double ratio = ratioInMeters / 1000.0d;
+        final float zoom = getMapZoom(ratioInMeters);
 
         final Intent intent = new Intent(this, MapsActivity.class);
         intent.putExtra("location", centerLocation);
         intent.putExtra("ratio", ratio);
         intent.putExtra("date_from", dateFrom);
         intent.putExtra("date_to", dateTo);
+        intent.putExtra("zoom", zoom);
         startActivity(intent);
+    }
+
+    private float getMapZoom(int ratioInMeters) {
+        final float zoom;
+        switch (ratioInMeters) {
+            case 300:
+                zoom = 16.0f;
+                break;
+            case 500:
+                zoom = 15.5f;
+                break;
+            case 800:
+                zoom = 14.5f;
+                break;
+            case 1000:
+                zoom = 13.5f;
+                break;
+            case 1500:
+                zoom = 13.0f;
+                break;
+            default:
+                zoom = 16.0f;
+                break;
+        }
+        return zoom;
     }
 
     private void onSuccess(Location location) {

@@ -13,10 +13,13 @@ import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 
 import butterknife.ButterKnife;
@@ -33,14 +36,17 @@ import static gbem.com.ar.estacionamientos.utils.Utils.getIdToken;
 
 public class MapsActivity extends FragmentActivity implements OnMapReadyCallback {
 
-    private static final float DEFAULT_ZOOM = 16.0f;
     private static final String TAG = MapsActivity.class.getSimpleName();
+
+    private final Map<Marker, ParkingLotResultDTO> markers = new HashMap<>();
+
     private GoogleMap mMap;
     private ISearchService searchService;
     private LatLng location;
     private double ratio;
     private Date fromDate;
     private Date toDate;
+    private float zoom;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -53,6 +59,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         ratio = extras.getDouble("ratio");
         fromDate = (Date) extras.get("date_from");
         toDate = (Date) extras.get("date_to");
+        zoom = extras.getFloat("zoom");
 
         SupportMapFragment mapFragment =
                 (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map);
@@ -65,6 +72,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     @Override
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
+        mMap.setOnInfoWindowClickListener(this::onInfoWindowClick);
 
         mMap.addMarker(new MarkerOptions()
                 .title("Punto de búsqueda")
@@ -75,6 +83,16 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         centerCameraAt(location);
 
         findPlaces();
+    }
+
+    private void onInfoWindowClick(Marker marker) {
+        if (location.equals(marker.getPosition()) || !markers.containsKey(marker)) {
+            return;
+        }
+
+        final ParkingLotResultDTO parkingLot = markers.get(marker);
+
+        Toast.makeText(this, "Desea reservar? " + parkingLot.getId(), Toast.LENGTH_SHORT).show();
     }
 
     private void findPlaces() {
@@ -88,15 +106,14 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                     public void onResponse(@NonNull Call<List<ParkingLotResultDTO>> call,
                                            @NonNull Response<List<ParkingLotResultDTO>> response) {
                         if (response.isSuccessful() && response.body() != null) {
-                            mMap.clear();
-
                             for (ParkingLotResultDTO dto : response.body()) {
                                 MarkerOptions marker = new MarkerOptions();
                                 LatLng coordinates = Utils.createLatLng(dto.getCoordinates());
                                 marker.position(coordinates);
-                                marker.title(dto.getStreetAddress());
-                                marker.snippet(dto.getDescription());
-                                mMap.addMarker(marker);
+                                marker.title(dto.getDescription() + " " + dto.getStreetAddress());
+                                marker.snippet("Clic para reservarlo");
+                                Marker m = mMap.addMarker(marker);
+                                markers.put(m, dto);
                             }
                         }
                     }
@@ -123,7 +140,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     private void centerCameraAt(final LatLng latlng) {
         mMap.animateCamera(
                 CameraUpdateFactory.newCameraPosition(
-                        CameraPosition.fromLatLngZoom(latlng, DEFAULT_ZOOM)));
+                        CameraPosition.fromLatLngZoom(latlng, zoom)));
     }
 
 
