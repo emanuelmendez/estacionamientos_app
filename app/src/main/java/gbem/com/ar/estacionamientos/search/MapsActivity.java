@@ -14,7 +14,9 @@ import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
 
+import java.util.Date;
 import java.util.List;
+import java.util.Objects;
 
 import gbem.com.ar.estacionamientos.R;
 import gbem.com.ar.estacionamientos.api.dtos.ParkingLotResultDTO;
@@ -31,11 +33,21 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     private static final String TAG = MapsActivity.class.getSimpleName();
     private GoogleMap mMap;
     private ISearchService searchService;
+    private LatLng location;
+    private double ratio;
+    private Date fromDate;
+    private Date toDate;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_maps);
+
+        final Bundle extras = Objects.requireNonNull(getIntent().getExtras());
+        location = (LatLng) extras.get("location");
+        ratio = extras.getDouble("ratio");
+        fromDate = (Date) extras.get("date_from");
+        toDate = (Date) extras.get("date_to");
 
         SupportMapFragment mapFragment =
                 (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map);
@@ -50,14 +62,16 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         mMap = googleMap;
         mMap.animateCamera(
                 CameraUpdateFactory.newCameraPosition(
-                        CameraPosition.fromLatLngZoom(new LatLng(-34.625, -58.485), 15.0F)));
+                        CameraPosition.fromLatLngZoom(location, 15.0F)));
 
-        mMap.setOnMapClickListener(latLng -> searchNear(latLng, 1.0));
+        mMap.setOnMapClickListener(latLng -> searchNear());
     }
 
-    private void searchNear(final LatLng latLng, double ratio) {
+    private void searchNear() {
         searchService
-                .searchNear(getIdToken(this), latLng.latitude, latLng.longitude, ratio)
+                .searchNear(getIdToken(this),
+                        location.latitude, location.longitude, ratio,
+                        Utils.parse(fromDate), Utils.parse(toDate))
                 .enqueue(new Callback<List<ParkingLotResultDTO>>() {
 
                     @Override

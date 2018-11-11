@@ -44,4 +44,5 @@
     <string name="title_when">¿Para cuando querés estacionar?</string>
     <string name="btn_set_date">Ingresar día</string>
     <string name="btn_set_time">Ingresar hora</string>
+    <string name="max_distance_lbl">Distancia máxima de búsqueda (en metros)</string>
 </resources>
