@@ -1,5 +1,6 @@
 package gbem.com.ar.estacionamientos.dashboard;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.NavigationView;
@@ -14,9 +15,10 @@ import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 
-import gbem.com.ar.estacionamientos.ParkingSearchFragment;
+import gbem.com.ar.estacionamientos.search.ParkingSearchFragment;
 import gbem.com.ar.estacionamientos.R;
 import gbem.com.ar.estacionamientos.api.dtos.UserDataDTO;
+import gbem.com.ar.estacionamientos.search.SearchFragment;
 import gbem.com.ar.estacionamientos.vehicles.VehicleFragment;
 
 import static gbem.com.ar.estacionamientos.utils.Utils.USER_DATA_KEY;
@@ -93,8 +95,8 @@ public class NavigationDrawerActivity extends AppCompatActivity
                 fragment = new VehicleFragment();
                 break;
             case R.id.nav_search_parking:
-                fragment = new ParkingSearchFragment();
-                break;
+                startActivity(new Intent(this, SearchFragment.class));
+                return true;
             default:
                 fragment = HomeFragment.newInstance(userData);
                 break;

@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string-array name="radio_array">
-        <item>300 metros</item>
-        <item>500 metros</item>
-        <item>800 metros</item>
-        <item>1000 metros</item>
-        <item>1500 metros</item>
+        <item>300</item>
+        <item>500</item>
+        <item>800</item>
+        <item>1000</item>
+        <item>1500</item>
     </string-array>
 </resources>

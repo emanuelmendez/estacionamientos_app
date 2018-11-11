@@ -27,14 +27,13 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".MainActivity" />
 
         <meta-data
             android:name="com.google.android.geo.API_KEY"
             android:value="@string/google_maps_key" />
 
         <activity
-            android:name=".MapsActivity"
+            android:name=".search.MapsActivity"
             android:label="@string/title_activity_maps" />
         <activity
             android:name=".dashboard.NavigationDrawerActivity"
@@ -43,6 +42,8 @@
         <activity
             android:name=".dashboard.ReservationInMapActivity"
             android:label="@string/title_activity_reservation_in_map" />
+        <activity android:name=".search.SearchFragment" />
+
     </application>
 
 </manifest>

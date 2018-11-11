@@ -30,4 +30,19 @@
     <string name="proxima_reserva">Próxima reserva</string>
     <string name="btn_confirmar">Confirmar</string>
     <string name="btn_rechazar">Rechazar</string>
+    <string name="btn_center_at_parking_lot">Centrar el mapa en el estacionamiento</string>
+    <string name="buscar_un_estacionamiento">Buscar cerca de una ubicación</string>
+    <string name="calle_altura_ciudad">Calle, altura, ciudad</string>
+    <string name="buscar">Buscar</string>
+    <string name="location_search_error">Hubo un error al preguntar por esta dirección. Intentá más tarde</string>
+    <string name="location_search_not_found">No se encontró esa dirección, ¿Estás seguro que es correcta?</string>
+    <string name="use_my_location">Usar mi ubicación actual</string>
+    <string name="title_address_search_input">Ingresá dirección donde buscar</string>
+    <string name="duration_in_hours">Duración (horas)</string>
+    <string name="time">Hora</string>
+    <string name="date">Día</string>
+    <string name="title_when">¿Para cuando querés estacionar?</string>
+    <string name="btn_set_date">Ingresar día</string>
+    <string name="btn_set_time">Ingresar hora</string>
+    <string name="max_distance_lbl">Distancia máxima de búsqueda (en metros)</string>
 </resources>
