@@ -101,16 +101,22 @@ public class NavigationDrawerActivity extends AppCompatActivity
                 break;
         }
 
+        DrawerLayout drawer = findViewById(R.id.drawer_layout);
+        drawer.closeDrawer(GravityCompat.START);
+
         FragmentManager fragmentManager = getSupportFragmentManager();
         FragmentTransaction ft = fragmentManager.beginTransaction();
 
         ft.replace(R.id.screen_area, fragment);
         ft.commit();
 
-
-        DrawerLayout drawer = findViewById(R.id.drawer_layout);
-        drawer.closeDrawer(GravityCompat.START);
         return true;
     }
 
+    @Override
+    protected void onResume() {
+        super.onResume();
+        DrawerLayout drawer = findViewById(R.id.drawer_layout);
+        drawer.closeDrawer(GravityCompat.START);
+    }
 }

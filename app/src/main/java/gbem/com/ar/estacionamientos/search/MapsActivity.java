@@ -2,6 +2,8 @@ package gbem.com.ar.estacionamientos.search;
 
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.constraint.ConstraintLayout;
+import android.support.design.widget.Snackbar;
 import android.support.v4.app.FragmentActivity;
 import android.util.Log;
 import android.widget.Toast;
@@ -23,6 +25,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
+import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 import gbem.com.ar.estacionamientos.R;
@@ -41,8 +44,11 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
     private final Map<Marker, ParkingLotResultDTO> markers = new HashMap<>();
 
-    private GoogleMap mMap;
+    @BindView(R.id.cl_maps_activity)
+    ConstraintLayout layout;
 
+    private Snackbar snackbar;
+    private GoogleMap mMap;
     private LatLng location;
     private double ratio;
     private Date fromDate;
@@ -74,7 +80,13 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     @Override
     public void onMapReady(final GoogleMap googleMap) {
         mMap = googleMap;
-        mMap.setOnInfoWindowClickListener(this::onInfoWindowClick);
+        mMap.setOnMapClickListener(latLng -> {
+            if (snackbar != null) {
+                snackbar.dismiss();
+            }
+        });
+
+        mMap.setOnMarkerClickListener(this::onMarkerClick);
 
         mMap.addMarker(new MarkerOptions()
                 .title("Punto de búsqueda")
@@ -87,14 +99,28 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         if (!parkingLots.isEmpty()) addMarkersToMap();
     }
 
-    private void onInfoWindowClick(final Marker marker) {
+    private boolean onMarkerClick(final Marker marker) {
         if (location.equals(marker.getPosition()) || !markers.containsKey(marker)) {
-            return;
+            return false;
+        }
+
+        if (snackbar != null) {
+            snackbar.dismiss();
         }
 
         final ParkingLotResultDTO parkingLot = markers.get(marker);
 
-        Toast.makeText(this, "Desea reservar? " + parkingLot.getId(), Toast.LENGTH_SHORT).show();
+        snackbar = Snackbar.make(layout, "Valor por hora: " + parkingLot.getValue(), Snackbar.LENGTH_INDEFINITE);
+        snackbar.setAction("Reservar", v -> {
+            // TODO Si quiere, intentar reservar (puede fallar si alguien reservó en el medio)
+
+            // TODO finish
+            setResult(RESULT_OK);
+            finish();
+        });
+        snackbar.show();
+
+        return false;
     }
 
     private void findPlaces() {
@@ -128,7 +154,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             final LatLng coordinates = Utils.createLatLng(dto.getCoordinates());
             marker.position(coordinates);
             marker.title(dto.getDescription() + " en " + dto.getStreetAddress());
-            marker.snippet("Clic para reservarlo");
+            marker.snippet("Ofrecido por " + dto.getUserFullName());
             final Marker m = mMap.addMarker(marker);
             markers.put(m, dto);
         }

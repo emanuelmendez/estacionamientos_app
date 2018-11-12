@@ -228,7 +228,14 @@ public class SearchFragment extends FragmentActivity {
         intent.putExtra("date_from", dateFrom);
         intent.putExtra("date_to", dateTo);
         intent.putExtra("zoom", zoom);
-        startActivity(intent);
+        startActivityForResult(intent, 531);
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (requestCode == 531 && resultCode == RESULT_OK) {
+            super.onBackPressed();
+        }
     }
 
     private float getMapZoom(int ratioInMeters) {

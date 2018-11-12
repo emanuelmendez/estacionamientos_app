@@ -112,9 +112,6 @@ public class HomeFragment extends Fragment implements SolicitudListener {
         if (dashboardService == null)
             dashboardService = getApp(getActivity()).getService(DashboardService.class);
 
-        dashboardService.getDriverCurrentReservation(getIdToken(getActivity())).enqueue(new DriverLastReservationCallback());
-        dashboardService.getLenderReservations(getIdToken(getActivity())).enqueue(new LenderReservationsCallback());
-
         return view;
     }
 
@@ -122,6 +119,15 @@ public class HomeFragment extends Fragment implements SolicitudListener {
     public void onDestroyView() {
         super.onDestroyView();
         unbinder.unbind();
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        Objects.requireNonNull(getActivity());
+
+        dashboardService.getDriverCurrentReservation(getIdToken(getActivity())).enqueue(new DriverLastReservationCallback());
+        dashboardService.getLenderReservations(getIdToken(getActivity())).enqueue(new LenderReservationsCallback());
     }
 
     @OnClick(R.id.btnVerEnMapa)
@@ -260,4 +266,6 @@ public class HomeFragment extends Fragment implements SolicitudListener {
             Toast.makeText(getActivity(), "Error", Toast.LENGTH_SHORT).show();
         }
     }
+
+
 }
