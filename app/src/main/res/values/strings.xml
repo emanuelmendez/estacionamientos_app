@@ -47,4 +47,5 @@
     <string name="max_distance_lbl">Distancia máxima de búsqueda (en metros)</string>
     <string name="options">Opciones</string>
     <string name="center">Centrar</string>
+    <string name="parking_lots_not_found">No se obtuvo resultados. Intente nuevamente cambiando los parámetros de búsqueda</string>
 </resources>

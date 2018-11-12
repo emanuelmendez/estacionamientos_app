@@ -16,6 +16,7 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -41,15 +42,16 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     private final Map<Marker, ParkingLotResultDTO> markers = new HashMap<>();
 
     private GoogleMap mMap;
-    private ISearchService searchService;
+
     private LatLng location;
     private double ratio;
     private Date fromDate;
     private Date toDate;
     private float zoom;
+    private List<ParkingLotResultDTO> parkingLots = new ArrayList<>();
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
+    protected void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_maps);
         ButterKnife.bind(this);
@@ -61,16 +63,16 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         toDate = (Date) extras.get("date_to");
         zoom = extras.getFloat("zoom");
 
-        SupportMapFragment mapFragment =
+        findPlaces();
+
+        final SupportMapFragment mapFragment =
                 (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map);
 
         mapFragment.getMapAsync(this);
-
-        searchService = Utils.getApp(this).getService(ISearchService.class);
     }
 
     @Override
-    public void onMapReady(GoogleMap googleMap) {
+    public void onMapReady(final GoogleMap googleMap) {
         mMap = googleMap;
         mMap.setOnInfoWindowClickListener(this::onInfoWindowClick);
 
@@ -82,10 +84,10 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
         centerCameraAt(location);
 
-        findPlaces();
+        if (!parkingLots.isEmpty()) addMarkersToMap();
     }
 
-    private void onInfoWindowClick(Marker marker) {
+    private void onInfoWindowClick(final Marker marker) {
         if (location.equals(marker.getPosition()) || !markers.containsKey(marker)) {
             return;
         }
@@ -96,35 +98,12 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     }
 
     private void findPlaces() {
-        searchService
+        Utils.getApp(this)
+                .getService(ISearchService.class)
                 .searchNear(getIdToken(this),
                         location.latitude, location.longitude, ratio,
                         Utils.parse(fromDate), Utils.parse(toDate))
-                .enqueue(new Callback<List<ParkingLotResultDTO>>() {
-
-                    @Override
-                    public void onResponse(@NonNull Call<List<ParkingLotResultDTO>> call,
-                                           @NonNull Response<List<ParkingLotResultDTO>> response) {
-                        if (response.isSuccessful() && response.body() != null) {
-                            for (ParkingLotResultDTO dto : response.body()) {
-                                MarkerOptions marker = new MarkerOptions();
-                                LatLng coordinates = Utils.createLatLng(dto.getCoordinates());
-                                marker.position(coordinates);
-                                marker.title(dto.getDescription() + " " + dto.getStreetAddress());
-                                marker.snippet("Clic para reservarlo");
-                                Marker m = mMap.addMarker(marker);
-                                markers.put(m, dto);
-                            }
-                        }
-                    }
-
-                    @Override
-                    public void onFailure(@NonNull Call<List<ParkingLotResultDTO>> call, @NonNull Throwable t) {
-                        Log.e(TAG, t.getMessage(), t);
-                        Toast.makeText(MapsActivity.this, "Search Service error", Toast.LENGTH_SHORT).show();
-                    }
-
-                });
+                .enqueue(new searchServiceCallback());
     }
 
     @OnClick(R.id.btn_options)
@@ -143,5 +122,44 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                         CameraPosition.fromLatLngZoom(latlng, zoom)));
     }
 
+    private void addMarkersToMap() {
+        for (final ParkingLotResultDTO dto : parkingLots) {
+            final MarkerOptions marker = new MarkerOptions();
+            final LatLng coordinates = Utils.createLatLng(dto.getCoordinates());
+            marker.position(coordinates);
+            marker.title(dto.getDescription() + " en " + dto.getStreetAddress());
+            marker.snippet("Clic para reservarlo");
+            final Marker m = mMap.addMarker(marker);
+            markers.put(m, dto);
+        }
+    }
 
+    private final class searchServiceCallback implements Callback<List<ParkingLotResultDTO>> {
+
+        @Override
+        public void onResponse(@NonNull final Call<List<ParkingLotResultDTO>> call,
+                               @NonNull final Response<List<ParkingLotResultDTO>> response) {
+            if (response.isSuccessful() && response.body() != null && !response.body().isEmpty()) {
+               parkingLots.addAll(response.body());
+               if (mMap != null) {
+                   addMarkersToMap();
+               }
+            } else {
+                Toast.makeText(MapsActivity.this,
+                        R.string.parking_lots_not_found,
+                        Toast.LENGTH_LONG).show();
+
+                onChangeOptions();
+            }
+        }
+
+        @Override
+        public void onFailure(@NonNull final Call<List<ParkingLotResultDTO>> call,
+                              @NonNull final Throwable t) {
+            Log.e(TAG, t.getMessage(), t);
+            Toast.makeText(MapsActivity.this, "Error de búsqueda", Toast.LENGTH_SHORT)
+                    .show();
+        }
+
+    }
 }
