@@ -26,6 +26,24 @@ public class ParkingLotResultDTO implements Serializable {
     private boolean sunday;
     private int fromHour;
     private int toHour;
+    private String userFullName;
+    private String value;
+
+    public String getUserFullName() {
+        return userFullName;
+    }
+
+    public void setUserFullName(String userFullName) {
+        this.userFullName = userFullName;
+    }
+
+    public String getValue() {
+        return value;
+    }
+
+    public void setValue(String value) {
+        this.value = value;
+    }
 
     public boolean isMonday() {
         return monday;
