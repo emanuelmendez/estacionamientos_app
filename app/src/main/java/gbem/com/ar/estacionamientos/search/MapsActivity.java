@@ -139,16 +139,19 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         @Override
         public void onResponse(@NonNull final Call<List<ParkingLotResultDTO>> call,
                                @NonNull final Response<List<ParkingLotResultDTO>> response) {
-            if (response.isSuccessful() && response.body() != null && !response.body().isEmpty()) {
-               parkingLots.addAll(response.body());
-               if (mMap != null) {
-                   addMarkersToMap();
-               }
-            } else {
+            if (response.code() == 200) {
+                parkingLots.addAll(response.body());
+                if (mMap != null) {
+                    addMarkersToMap();
+                }
+            } else if (response.code() == 204) {
                 Toast.makeText(MapsActivity.this,
                         R.string.parking_lots_not_found,
                         Toast.LENGTH_LONG).show();
 
+                onChangeOptions();
+            } else {
+                Toast.makeText(MapsActivity.this, "Error de búsqueda", Toast.LENGTH_SHORT).show();
                 onChangeOptions();
             }
         }
