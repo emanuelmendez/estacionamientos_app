@@ -1,6 +1,5 @@
-package gbem.com.ar.estacionamientos.api.rest;
+package gbem.com.ar.estacionamientos.search;
 
-import java.util.Date;
 import java.util.List;
 
 import gbem.com.ar.estacionamientos.api.dtos.ParkingLotResultDTO;
@@ -13,7 +12,7 @@ import retrofit2.http.Query;
  * @author pielreloj
  * Created: 02/09/18.
  */
-public interface ISearchService {
+interface ISearchService {
 
     /**
      * Llamado a la API de búsquedas.

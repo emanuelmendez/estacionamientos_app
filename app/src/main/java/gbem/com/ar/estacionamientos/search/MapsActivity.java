@@ -30,7 +30,6 @@ import butterknife.ButterKnife;
 import butterknife.OnClick;
 import gbem.com.ar.estacionamientos.R;
 import gbem.com.ar.estacionamientos.api.dtos.ParkingLotResultDTO;
-import gbem.com.ar.estacionamientos.api.rest.ISearchService;
 import gbem.com.ar.estacionamientos.utils.Utils;
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -47,6 +46,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     @BindView(R.id.cl_maps_activity)
     ConstraintLayout layout;
 
+    private IReservationService reservationService;
     private Snackbar snackbar;
     private GoogleMap mMap;
     private LatLng location;
@@ -100,27 +100,33 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     }
 
     private boolean onMarkerClick(final Marker marker) {
-        if (location.equals(marker.getPosition()) || !markers.containsKey(marker)) {
+        if (location.equals(marker.getPosition()) || !markers.containsKey(marker))
             return false;
-        }
 
-        if (snackbar != null) {
-            snackbar.dismiss();
-        }
+        if (snackbar != null) snackbar.dismiss();
 
         final ParkingLotResultDTO parkingLot = markers.get(marker);
 
         snackbar = Snackbar.make(layout, "Valor por hora: " + parkingLot.getValue(), Snackbar.LENGTH_INDEFINITE);
-        snackbar.setAction("Reservar", v -> {
-            // TODO Si quiere, intentar reservar (puede fallar si alguien reservó en el medio)
-
-            // TODO finish
-            setResult(RESULT_OK);
-            finish();
-        });
+        snackbar.setAction("Reservar", v -> postReservation(parkingLot));
         snackbar.show();
 
         return false;
+    }
+
+    private void postReservation(ParkingLotResultDTO parkingLot) {
+        if (reservationService == null) {
+            reservationService = Utils.getApp(this).getService(IReservationService.class);
+        }
+
+        final ReservationOptionsDTO options = new ReservationOptionsDTO();
+        options.setParkingLotId(parkingLot.getId());
+        options.setDateFrom(fromDate.getTime());
+        options.setDateTo(toDate.getTime());
+
+        reservationService
+                .makeReservation(Utils.getIdToken(this), options)
+                .enqueue(new ReservationIntentCallback());
     }
 
     private void findPlaces() {
@@ -188,6 +194,30 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             Log.e(TAG, t.getMessage(), t);
             Toast.makeText(MapsActivity.this, "Error de búsqueda", Toast.LENGTH_SHORT)
                     .show();
+        }
+
+    }
+
+    private class ReservationIntentCallback implements Callback<Void> {
+
+        @Override
+        public void onResponse(@NonNull Call<Void> call, @NonNull Response<Void> response) {
+            if (response.code() == 201) {
+                setResult(RESULT_OK);
+                finish();
+            } else if (response.code() == 409) {
+                Toast.makeText(MapsActivity.this,
+                        "Alguien lo reservó antes que vos, intentá con otro lugar", Toast.LENGTH_LONG).show();
+            } else {
+                Toast.makeText(MapsActivity.this, "Error de comunicaciones", Toast.LENGTH_SHORT).show();
+            }
+
+        }
+
+        @Override
+        public void onFailure(@NonNull Call<Void> call, @NonNull Throwable t) {
+            Log.e(TAG, "ReservationCallback failure: ", t);
+            Toast.makeText(MapsActivity.this, "Error de comunicaciones", Toast.LENGTH_SHORT).show();
         }
 
     }
