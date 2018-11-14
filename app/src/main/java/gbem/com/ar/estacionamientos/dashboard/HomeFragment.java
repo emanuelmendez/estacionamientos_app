@@ -124,10 +124,19 @@ public class HomeFragment extends Fragment implements SolicitudListener {
     @Override
     public void onResume() {
         super.onResume();
-        Objects.requireNonNull(getActivity());
 
-        dashboardService.getDriverCurrentReservation(getIdToken(getActivity())).enqueue(new DriverLastReservationCallback());
-        dashboardService.getLenderReservations(getIdToken(getActivity())).enqueue(new LenderReservationsCallback());
+        getDriverCurrentReservation();
+        getLenderReservations();
+    }
+
+    private void getLenderReservations() {
+        dashboardService.getLenderReservations(getIdToken(Objects.requireNonNull(getActivity())))
+                .enqueue(new LenderReservationsCallback());
+    }
+
+    private void getDriverCurrentReservation() {
+        dashboardService.getDriverCurrentReservation(getIdToken(Objects.requireNonNull(getActivity())))
+                .enqueue(new DriverLastReservationCallback());
     }
 
     @OnClick(R.id.btnVerEnMapa)
@@ -145,14 +154,15 @@ public class HomeFragment extends Fragment implements SolicitudListener {
                     @Override
                     public void onResponse(@NonNull Call<Void> call, @NonNull Response<Void> response) {
                         if (response.isSuccessful())
-                            Toast.makeText(getActivity(), "Cancelada", Toast.LENGTH_SHORT).show();
+                            getDriverCurrentReservation(); // actualizamos la vista
                         else
-                            Toast.makeText(getActivity(), "Error al cancelar", Toast.LENGTH_SHORT).show();
+                            // TODO cambiar a Snackbar?
+                            Toast.makeText(getActivity(), "Error al cancelar la reserva", Toast.LENGTH_LONG).show();
                     }
 
                     @Override
                     public void onFailure(@NonNull Call<Void> call, @NonNull Throwable t) {
-                        Toast.makeText(getActivity(), "Cancelar Failure", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(getActivity(), "Error de comunicaciones", Toast.LENGTH_SHORT).show();
                     }
                 });
     }
@@ -177,9 +187,10 @@ public class HomeFragment extends Fragment implements SolicitudListener {
                     @Override
                     public void onResponse(@NonNull Call<Void> call, @NonNull Response<Void> response) {
                         if (response.isSuccessful())
+                            // TODO actualizar el status de esa reserva
                             Toast.makeText(getActivity(), "Accepted", Toast.LENGTH_SHORT).show();
                         else
-                            Toast.makeText(getActivity(), "Confirmation error", Toast.LENGTH_SHORT).show();
+                            Toast.makeText(getActivity(), "Error al intentar confirmar la reserva", Toast.LENGTH_SHORT).show();
                     }
 
                     @Override
@@ -198,7 +209,7 @@ public class HomeFragment extends Fragment implements SolicitudListener {
                     @Override
                     public void onResponse(@NonNull Call<Void> call, @NonNull Response<Void> response) {
                         if (response.isSuccessful())
-                            Toast.makeText(getActivity(), "Rejected...", Toast.LENGTH_SHORT).show();
+                            getLenderReservations(); // actualizamos la vista
                         else
                             Toast.makeText(getActivity(), "Rejection error", Toast.LENGTH_SHORT).show();
                     }
