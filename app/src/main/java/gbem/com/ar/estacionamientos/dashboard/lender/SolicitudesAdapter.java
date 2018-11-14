@@ -13,7 +13,6 @@ import java.text.SimpleDateFormat;
 import java.util.List;
 
 import gbem.com.ar.estacionamientos.R;
-import gbem.com.ar.estacionamientos.api.dtos.Status;
 import gbem.com.ar.estacionamientos.dashboard.ReservationDTO;
 
 /**
@@ -51,7 +50,7 @@ public class SolicitudesAdapter extends RecyclerView.Adapter<SolicitudesAdapter.
         String hasta = "Fin: " + sdf.format(item.getTo());
         holder.txtDesde.setText(desde);
         holder.txtHasta.setText(hasta);
-        holder.txtStatus.setText(item.getStatus());
+        holder.txtStatus.setText(R.string.pending_status);
     }
 
     @Override
@@ -64,18 +63,13 @@ public class SolicitudesAdapter extends RecyclerView.Adapter<SolicitudesAdapter.
         notifyDataSetChanged();
     }
 
-    private void showButtons(View item, ReservationDTO r) {
+    private void showButtons(View item) {
         final View btnConfirmar = item.findViewById(R.id.btnConfirmar);
         final View btnCancelar = item.findViewById(R.id.btnCancelar);
 
         if (btnCancelar.getVisibility() == View.GONE) {
             btnCancelar.setVisibility(View.VISIBLE);
-
-            if (r.getStatus().equals(Status.PENDING.description())) {
-                btnConfirmar.setVisibility(View.VISIBLE);
-            } else {
-                btnConfirmar.setVisibility(View.GONE);
-            }
+            btnConfirmar.setVisibility(View.VISIBLE);
         } else {
             btnConfirmar.setVisibility(View.GONE);
             btnCancelar.setVisibility(View.GONE);
@@ -109,12 +103,12 @@ public class SolicitudesAdapter extends RecyclerView.Adapter<SolicitudesAdapter.
             ReservationDTO r = solicitudes.get(this.getAdapterPosition());
             if (v.getId() == btnConfirmar.getId()) {
                 listener.onConfirmar(r);
-                showButtons(v.getRootView(), r);
+                showButtons(v.getRootView());
             } else if (v.getId() == btnCancelar.getId()) {
-                listener.onCancelar(r);
-                showButtons(v.getRootView(), r);
+                listener.onRechazar(r);
+                showButtons(v.getRootView());
             } else {
-                showButtons(v, r);
+                showButtons(v);
             }
         }
     }

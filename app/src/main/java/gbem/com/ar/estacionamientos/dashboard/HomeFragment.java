@@ -44,7 +44,7 @@ import static gbem.com.ar.estacionamientos.utils.Utils.getIdToken;
 public class HomeFragment extends Fragment implements SolicitudListener {
 
     private static final String TAG = HomeFragment.class.getSimpleName();
-    private final List<ReservationDTO> occupiedLots = new ArrayList<>();
+    private final List<ReservationDTO> lenderReservations = new ArrayList<>();
 
     @BindView(R.id.txtReservaEn)
     TextView txtReservaEn;
@@ -106,7 +106,7 @@ public class HomeFragment extends Fragment implements SolicitudListener {
         rvSolicitudes.setItemAnimator(new DefaultItemAnimator());
         rvSolicitudes.addItemDecoration(new DividerItemDecoration(getActivity(), LinearLayoutManager.VERTICAL));
 
-        adapter = new SolicitudesAdapter(occupiedLots, this);
+        adapter = new SolicitudesAdapter(lenderReservations, this);
         rvSolicitudes.setAdapter(adapter);
 
         if (dashboardService == null)
@@ -130,7 +130,7 @@ public class HomeFragment extends Fragment implements SolicitudListener {
     }
 
     private void getLenderReservations() {
-        dashboardService.getLenderReservations(getIdToken(Objects.requireNonNull(getActivity())))
+        dashboardService.getPendingLenderReservations(getIdToken(Objects.requireNonNull(getActivity())))
                 .enqueue(new LenderReservationsCallback());
     }
 
@@ -186,11 +186,12 @@ public class HomeFragment extends Fragment implements SolicitudListener {
                 .enqueue(new Callback<Void>() {
                     @Override
                     public void onResponse(@NonNull Call<Void> call, @NonNull Response<Void> response) {
-                        if (response.isSuccessful())
-                            // TODO actualizar el status de esa reserva
-                            Toast.makeText(getActivity(), "Accepted", Toast.LENGTH_SHORT).show();
-                        else
+                        if (response.isSuccessful()) {
+                            Toast.makeText(getActivity(), "Aceptada", Toast.LENGTH_SHORT).show();
+                            getLenderReservations(); // actualizamos la vista
+                        } else {
                             Toast.makeText(getActivity(), "Error al intentar confirmar la reserva", Toast.LENGTH_SHORT).show();
+                        }
                     }
 
                     @Override
@@ -201,17 +202,19 @@ public class HomeFragment extends Fragment implements SolicitudListener {
     }
 
     @Override
-    public void onCancelar(ReservationDTO reservation) {
-        Log.d(TAG, "onCancelar: " + reservation);
+    public void onRechazar(ReservationDTO reservation) {
+        Log.d(TAG, "onRechazar: " + reservation);
         Objects.requireNonNull(getActivity());
         dashboardService.rejectOrCancelLenderReservation(getIdToken(getActivity()), reservation.getId())
                 .enqueue(new Callback<Void>() {
                     @Override
                     public void onResponse(@NonNull Call<Void> call, @NonNull Response<Void> response) {
-                        if (response.isSuccessful())
+                        if (response.isSuccessful()) {
+                            Toast.makeText(getActivity(), "Rechazada", Toast.LENGTH_SHORT).show();
                             getLenderReservations(); // actualizamos la vista
-                        else
+                        } else {
                             Toast.makeText(getActivity(), "Rejection error", Toast.LENGTH_SHORT).show();
+                        }
                     }
 
                     @Override
@@ -257,16 +260,16 @@ public class HomeFragment extends Fragment implements SolicitudListener {
         @Override
         public void onResponse(@NonNull Call<List<ReservationDTO>> call, @NonNull Response<List<ReservationDTO>> response) {
             if (response.isSuccessful()) {
-                occupiedLots.clear();
+                lenderReservations.clear();
                 if (response.code() == 200) {
                     cvLenderLots.setVisibility(VISIBLE);
-                    occupiedLots.addAll(response.body());
+                    lenderReservations.addAll(response.body());
 
-                    adapter.setData(occupiedLots);
+                    adapter.setData(lenderReservations);
                 } else {
                     cvLenderLots.setVisibility(GONE);
                 }
-                Log.i(TAG, "onResponse: " + occupiedLots.toString());
+                Log.i(TAG, "onResponse: " + lenderReservations.toString());
             } else {
                 Toast.makeText(getActivity(), "Error", Toast.LENGTH_SHORT).show();
             }
