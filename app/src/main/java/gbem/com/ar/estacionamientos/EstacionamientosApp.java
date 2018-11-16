@@ -1,14 +1,14 @@
 package gbem.com.ar.estacionamientos;
 
 import android.app.Application;
+import android.app.NotificationChannel;
+import android.app.NotificationManager;
+import android.os.Build;
 
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.google.android.gms.auth.api.signin.GoogleSignInClient;
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
-
-import retrofit2.Retrofit;
-import retrofit2.converter.gson.GsonConverterFactory;
 
 /**
  * @author pielreloj
@@ -16,21 +16,13 @@ import retrofit2.converter.gson.GsonConverterFactory;
  */
 public class EstacionamientosApp extends Application {
 
-    // ip a cambiar para pruebas
-    private static final String API_BASE_URL = "http://192.168.0.20:8080/web/";
     private static final String CLIENT_ID = "349020659959-ah8n75k13u1ekbgu59tfioqkgipc46mv.apps.googleusercontent.com";
 
-    private Retrofit retrofit;
     private GoogleSignInClient mGoogleSignInClient;
 
     @Override
     public void onCreate() {
         super.onCreate();
-
-        this.retrofit = new Retrofit.Builder()
-                .baseUrl(API_BASE_URL)
-                .addConverterFactory(GsonConverterFactory.create())
-                .build();
 
         final GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
                 .requestProfile()
@@ -39,18 +31,23 @@ public class EstacionamientosApp extends Application {
                 .build();
 
         this.mGoogleSignInClient = GoogleSignIn.getClient(this, gso);
+        createNotificationChannel();
     }
 
-    /**
-     * Método genérico para obtener un service para los request con retrofit
-     *
-     * @param service servicio a utilzar
-     * @param <T>     Clase del servicio (.class)
-     * @return Una instancia de una clase que implementa la interfaz recibida por parámetro,
-     * capaz de realizar los requests
-     */
-    public <T> T getService(Class<T> service) {
-        return retrofit.create(service);
+    private void createNotificationChannel() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            final CharSequence name = getString(R.string.notif_channel);
+            final String description = "Notificaciones cuando una reserva se solicita, cancela o confirma";
+            final int importance = NotificationManager.IMPORTANCE_DEFAULT;
+
+            final NotificationChannel channel = new NotificationChannel("estacionamientos_notif_service", name, importance);
+            channel.setDescription(description);
+
+            final NotificationManager notificationManager = getSystemService(NotificationManager.class);
+            if (notificationManager != null) {
+                notificationManager.createNotificationChannel(channel);
+            }
+        }
     }
 
     public GoogleSignInClient getGoogleSignInClient() {

@@ -41,5 +41,9 @@ public interface ISessionService {
     @POST("session/signup")
     Call<UserDataDTO> signUp(@Header("api_token") String token, @Body UserDataDTO data);
 
+    @POST("session/device")
+    Call<Void> updateDeviceToken(@Header("api_token") String token, @Body String deviceToken);
+
+
 
 }

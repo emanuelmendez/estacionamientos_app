@@ -13,10 +13,10 @@ import android.widget.EditText;
 import android.widget.Spinner;
 import android.widget.Toast;
 
-import gbem.com.ar.estacionamientos.EstacionamientosApp;
 import gbem.com.ar.estacionamientos.R;
 import gbem.com.ar.estacionamientos.api.dtos.VehicleDTO;
 import gbem.com.ar.estacionamientos.api.rest.IVehicleService;
+import gbem.com.ar.estacionamientos.utils.Utils;
 import okhttp3.ResponseBody;
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -43,7 +43,7 @@ public class VehicleDialogFragment extends AppCompatDialogFragment {
                 .inflate(R.layout.dialog_vehicle_input_form, null);
 
         if (iVehicleService == null) {
-            iVehicleService = ((EstacionamientosApp) v.getContext().getApplicationContext()).getService(IVehicleService.class);
+            iVehicleService = Utils.getService(IVehicleService.class);
         }
 
         //Brand spinner

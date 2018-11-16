@@ -10,6 +10,6 @@ public interface SolicitudListener {
 
     void onConfirmar(ReservationDTO reservation);
 
-    void onCancelar(ReservationDTO reservation);
+    void onRechazar(ReservationDTO reservation);
 
 }

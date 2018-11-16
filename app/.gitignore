@@ -34,3 +34,6 @@ output.json
 #NDK
 obj/
 .externalNativeBuild
+
+/google-services.json
+google-services.json

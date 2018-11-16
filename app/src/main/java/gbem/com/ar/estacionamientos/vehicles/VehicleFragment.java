@@ -1,6 +1,5 @@
 package gbem.com.ar.estacionamientos.vehicles;
 
-import android.content.DialogInterface;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.v4.app.Fragment;
@@ -15,10 +14,10 @@ import android.widget.Toast;
 import java.util.ArrayList;
 import java.util.List;
 
-import gbem.com.ar.estacionamientos.EstacionamientosApp;
 import gbem.com.ar.estacionamientos.R;
 import gbem.com.ar.estacionamientos.api.dtos.VehicleDTO;
 import gbem.com.ar.estacionamientos.api.rest.IVehicleService;
+import gbem.com.ar.estacionamientos.utils.Utils;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -62,7 +61,7 @@ public class VehicleFragment extends Fragment implements IDialogDismissListener{
     public void getVehicleJson(){
 
         if (iVehicleService == null) {
-            iVehicleService = ((EstacionamientosApp) getActivity().getApplication()).getService(IVehicleService.class);
+            iVehicleService = Utils.getService(IVehicleService.class);
         }
 
         Call<List<VehicleDTO>> call = iVehicleService.getVehicleByUserId(1); //TODO debe tomar el id de usuario loggeado

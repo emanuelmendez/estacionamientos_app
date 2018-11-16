@@ -30,6 +30,8 @@ import gbem.com.ar.estacionamientos.R;
 import gbem.com.ar.estacionamientos.api.dtos.UserDataDTO;
 import gbem.com.ar.estacionamientos.dashboard.lender.SolicitudListener;
 import gbem.com.ar.estacionamientos.dashboard.lender.SolicitudesAdapter;
+import gbem.com.ar.estacionamientos.notifications.NotificationService;
+import gbem.com.ar.estacionamientos.utils.Utils;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -38,13 +40,12 @@ import static android.view.View.GONE;
 import static android.view.View.VISIBLE;
 import static gbem.com.ar.estacionamientos.utils.Utils.RESERVATION_LOCATION;
 import static gbem.com.ar.estacionamientos.utils.Utils.USER_DATA_KEY;
-import static gbem.com.ar.estacionamientos.utils.Utils.getApp;
 import static gbem.com.ar.estacionamientos.utils.Utils.getIdToken;
 
 public class HomeFragment extends Fragment implements SolicitudListener {
 
     private static final String TAG = HomeFragment.class.getSimpleName();
-    private final List<ReservationDTO> occupiedLots = new ArrayList<>();
+    private final List<ReservationDTO> lenderReservations = new ArrayList<>();
 
     @BindView(R.id.txtReservaEn)
     TextView txtReservaEn;
@@ -90,7 +91,6 @@ public class HomeFragment extends Fragment implements SolicitudListener {
             Objects.requireNonNull(userData);
             Log.i(TAG, "onCreate: " + userData.getEmail());
         }
-
     }
 
     @Override
@@ -106,14 +106,14 @@ public class HomeFragment extends Fragment implements SolicitudListener {
         rvSolicitudes.setItemAnimator(new DefaultItemAnimator());
         rvSolicitudes.addItemDecoration(new DividerItemDecoration(getActivity(), LinearLayoutManager.VERTICAL));
 
-        adapter = new SolicitudesAdapter(occupiedLots, this);
+        adapter = new SolicitudesAdapter(lenderReservations, this);
         rvSolicitudes.setAdapter(adapter);
 
         if (dashboardService == null)
-            dashboardService = getApp(getActivity()).getService(DashboardService.class);
+            dashboardService = Utils.getService(DashboardService.class);
 
-        dashboardService.getDriverCurrentReservation(getIdToken(getActivity())).enqueue(new DriverLastReservationCallback());
-        dashboardService.getLenderReservations(getIdToken(getActivity())).enqueue(new LenderReservationsCallback());
+        NotificationService.updateDeviceToken(
+                getIdToken(getActivity()), userData.getDeviceToken());
 
         return view;
     }
@@ -122,6 +122,24 @@ public class HomeFragment extends Fragment implements SolicitudListener {
     public void onDestroyView() {
         super.onDestroyView();
         unbinder.unbind();
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+
+        getDriverCurrentReservation();
+        getLenderReservations();
+    }
+
+    private void getLenderReservations() {
+        dashboardService.getPendingLenderReservations(getIdToken(Objects.requireNonNull(getActivity())))
+                .enqueue(new LenderReservationsCallback());
+    }
+
+    private void getDriverCurrentReservation() {
+        dashboardService.getDriverCurrentReservation(getIdToken(Objects.requireNonNull(getActivity())))
+                .enqueue(new DriverLastReservationCallback());
     }
 
     @OnClick(R.id.btnVerEnMapa)
@@ -138,15 +156,16 @@ public class HomeFragment extends Fragment implements SolicitudListener {
                 .enqueue(new Callback<Void>() {
                     @Override
                     public void onResponse(@NonNull Call<Void> call, @NonNull Response<Void> response) {
-                        if (response.isSuccessful())
-                            Toast.makeText(getActivity(), "Cancelada", Toast.LENGTH_SHORT).show();
-                        else
-                            Toast.makeText(getActivity(), "Error al cancelar", Toast.LENGTH_SHORT).show();
+                        if (!response.isSuccessful()) {
+                            Toast.makeText(getActivity(), "Error al cancelar la reserva", Toast.LENGTH_LONG).show();
+                        }
+
+                        getDriverCurrentReservation(); // actualizamos la vista
                     }
 
                     @Override
                     public void onFailure(@NonNull Call<Void> call, @NonNull Throwable t) {
-                        Toast.makeText(getActivity(), "Cancelar Failure", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(getActivity(), "Error de comunicaciones", Toast.LENGTH_SHORT).show();
                     }
                 });
     }
@@ -170,10 +189,12 @@ public class HomeFragment extends Fragment implements SolicitudListener {
                 .enqueue(new Callback<Void>() {
                     @Override
                     public void onResponse(@NonNull Call<Void> call, @NonNull Response<Void> response) {
-                        if (response.isSuccessful())
-                            Toast.makeText(getActivity(), "Accepted", Toast.LENGTH_SHORT).show();
-                        else
-                            Toast.makeText(getActivity(), "Confirmation error", Toast.LENGTH_SHORT).show();
+                        if (response.isSuccessful()) {
+                            Toast.makeText(getActivity(), "Aceptada", Toast.LENGTH_SHORT).show();
+                        } else {
+                            Toast.makeText(getActivity(), "Error al intentar confirmar la reserva", Toast.LENGTH_SHORT).show();
+                        }
+                        getLenderReservations(); // actualizamos la vista
                     }
 
                     @Override
@@ -184,17 +205,19 @@ public class HomeFragment extends Fragment implements SolicitudListener {
     }
 
     @Override
-    public void onCancelar(ReservationDTO reservation) {
-        Log.d(TAG, "onCancelar: " + reservation);
+    public void onRechazar(ReservationDTO reservation) {
+        Log.d(TAG, "onRechazar: " + reservation);
         Objects.requireNonNull(getActivity());
         dashboardService.rejectOrCancelLenderReservation(getIdToken(getActivity()), reservation.getId())
                 .enqueue(new Callback<Void>() {
                     @Override
                     public void onResponse(@NonNull Call<Void> call, @NonNull Response<Void> response) {
-                        if (response.isSuccessful())
-                            Toast.makeText(getActivity(), "Rejected...", Toast.LENGTH_SHORT).show();
-                        else
+                        if (response.isSuccessful()) {
+                            Toast.makeText(getActivity(), "Rechazada", Toast.LENGTH_SHORT).show();
+                        } else {
                             Toast.makeText(getActivity(), "Rejection error", Toast.LENGTH_SHORT).show();
+                        }
+                        getLenderReservations(); // actualizamos la vista
                     }
 
                     @Override
@@ -240,16 +263,16 @@ public class HomeFragment extends Fragment implements SolicitudListener {
         @Override
         public void onResponse(@NonNull Call<List<ReservationDTO>> call, @NonNull Response<List<ReservationDTO>> response) {
             if (response.isSuccessful()) {
-                occupiedLots.clear();
+                lenderReservations.clear();
                 if (response.code() == 200) {
                     cvLenderLots.setVisibility(VISIBLE);
-                    occupiedLots.addAll(response.body());
+                    lenderReservations.addAll(response.body());
 
-                    adapter.setData(occupiedLots);
+                    adapter.setData(lenderReservations);
                 } else {
                     cvLenderLots.setVisibility(GONE);
                 }
-                Log.i(TAG, "onResponse: " + occupiedLots.toString());
+                Log.i(TAG, "onResponse: " + lenderReservations.toString());
             } else {
                 Toast.makeText(getActivity(), "Error", Toast.LENGTH_SHORT).show();
             }
@@ -260,4 +283,6 @@ public class HomeFragment extends Fragment implements SolicitudListener {
             Toast.makeText(getActivity(), "Error", Toast.LENGTH_SHORT).show();
         }
     }
+
+
 }
