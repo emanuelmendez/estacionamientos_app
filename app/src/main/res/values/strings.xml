@@ -49,4 +49,5 @@
     <string name="center">Centrar</string>
     <string name="parking_lots_not_found">No se obtuvo resultados. Intente nuevamente cambiando los parámetros de búsqueda</string>
     <string name="pending_status">Pendiente</string>
+    <string name="notif_channel">estacionamientos_notif_service</string>
 </resources>

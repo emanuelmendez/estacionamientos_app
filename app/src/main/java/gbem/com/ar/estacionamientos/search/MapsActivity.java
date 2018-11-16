@@ -116,7 +116,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
     private void postReservation(ParkingLotResultDTO parkingLot) {
         if (reservationService == null) {
-            reservationService = Utils.getApp(this).getService(IReservationService.class);
+            reservationService = Utils.getService(IReservationService.class);
         }
 
         final ReservationOptionsDTO options = new ReservationOptionsDTO();
@@ -130,8 +130,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     }
 
     private void findPlaces() {
-        Utils.getApp(this)
-                .getService(ISearchService.class)
+        Utils.getService(ISearchService.class)
                 .searchNear(getIdToken(this),
                         location.latitude, location.longitude, ratio,
                         Utils.parse(fromDate), Utils.parse(toDate))

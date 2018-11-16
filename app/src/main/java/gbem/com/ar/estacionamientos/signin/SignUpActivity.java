@@ -19,9 +19,11 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 import butterknife.OnTextChanged;
-import gbem.com.ar.estacionamientos.dashboard.NavigationDrawerActivity;
 import gbem.com.ar.estacionamientos.R;
 import gbem.com.ar.estacionamientos.api.dtos.UserDataDTO;
+import gbem.com.ar.estacionamientos.dashboard.NavigationDrawerActivity;
+import gbem.com.ar.estacionamientos.notifications.NotificationService;
+import gbem.com.ar.estacionamientos.utils.Utils;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -79,11 +81,13 @@ public class SignUpActivity extends AppCompatActivity {
 
         txtPhone.setEnabled(false);
         btnContinuar.setEnabled(false);
-        final ISessionService service = getApp(this).getService(ISessionService.class);
+        final ISessionService service = Utils.getService(ISessionService.class);
         final GoogleSignInAccount account = getApp(this).getLastSignedInAccount();
 
         if (account != null) {
             userData.setPhone(txtPhone.getText().toString());
+            userData.setDeviceToken(NotificationService.getToken(this));
+
             final Call<UserDataDTO> call = service.signUp(account.getIdToken(), userData);
 
             if (signUpCallback == null) {

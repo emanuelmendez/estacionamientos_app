@@ -23,6 +23,15 @@ public final class UserDataDTO implements Serializable {
     private List<VehicleDTO> vehicles;
     private List<ParkingLotResultDTO> parkingLots;
     private boolean active;
+    private String deviceToken;
+
+    public String getDeviceToken() {
+        return deviceToken;
+    }
+
+    public void setDeviceToken(String deviceToken) {
+        this.deviceToken = deviceToken;
+    }
 
     public long getId() {
         return id;

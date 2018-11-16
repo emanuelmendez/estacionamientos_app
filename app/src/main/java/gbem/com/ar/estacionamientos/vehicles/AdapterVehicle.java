@@ -4,8 +4,8 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.os.Bundle;
 import android.os.Handler;
-import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AlertDialog;
@@ -21,10 +21,10 @@ import android.widget.Toast;
 import java.util.Collections;
 import java.util.List;
 
-import gbem.com.ar.estacionamientos.EstacionamientosApp;
 import gbem.com.ar.estacionamientos.R;
 import gbem.com.ar.estacionamientos.api.dtos.VehicleDTO;
 import gbem.com.ar.estacionamientos.api.rest.IVehicleService;
+import gbem.com.ar.estacionamientos.utils.Utils;
 import okhttp3.ResponseBody;
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -52,7 +52,7 @@ public class AdapterVehicle extends RecyclerView.Adapter<RecyclerView.ViewHolder
         MyHolder holder = new MyHolder(view);
 
         if (iVehicleService == null) {
-            iVehicleService = ((EstacionamientosApp) view.getContext().getApplicationContext()).getService(IVehicleService.class);
+            iVehicleService = Utils.getService(IVehicleService.class);
         }
 
         //EDIT

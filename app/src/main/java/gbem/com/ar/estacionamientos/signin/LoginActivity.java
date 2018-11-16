@@ -12,15 +12,19 @@ import android.widget.ProgressBar;
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.google.android.gms.common.SignInButton;
+import com.google.android.gms.tasks.Task;
+import com.google.firebase.iid.FirebaseInstanceId;
+import com.google.firebase.iid.InstanceIdResult;
 
 import java.util.Objects;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
-import gbem.com.ar.estacionamientos.dashboard.NavigationDrawerActivity;
 import gbem.com.ar.estacionamientos.R;
 import gbem.com.ar.estacionamientos.api.dtos.UserDataDTO;
+import gbem.com.ar.estacionamientos.dashboard.NavigationDrawerActivity;
+import gbem.com.ar.estacionamientos.notifications.NotificationService;
 import gbem.com.ar.estacionamientos.utils.Utils;
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -44,6 +48,7 @@ public class LoginActivity extends AppCompatActivity {
     @BindView(R.id.splash_screen_layout)
     ConstraintLayout layout;
 
+    private ISessionService sessionService;
     private SessionServiceCallback sessionServiceCallback;
 
     @Override
@@ -52,8 +57,23 @@ public class LoginActivity extends AppCompatActivity {
         setContentView(R.layout.splash_screen);
         ButterKnife.bind(this);
 
+        sessionService = Utils.getService(ISessionService.class);
+
+        new Thread(this::getDeviceToken).start();
         new Thread(this::silentSignIn).start();
     }
+
+    private void getDeviceToken() {
+        if (NotificationService.getToken(this) == null) {
+            final Task<InstanceIdResult> task = FirebaseInstanceId.getInstance().getInstanceId();
+            task.addOnSuccessListener(result ->
+                    getSharedPreferences("_", MODE_PRIVATE)
+                            .edit()
+                            .putString("fb", result.getToken())
+                            .apply());
+        }
+    }
+
 
     private void silentSignIn() {
         if (Utils.getApp(this).getLastSignedInAccount() == null) {
@@ -75,7 +95,6 @@ public class LoginActivity extends AppCompatActivity {
     }
 
     private void sendGoogleAccountToBackend(@NonNull GoogleSignInAccount account) {
-        final ISessionService sessionService = Utils.getApp(this).getService(ISessionService.class);
         final Call<UserDataDTO> call = sessionService.getUserData(account.getIdToken());
 
         if (sessionServiceCallback == null) {
@@ -92,6 +111,7 @@ public class LoginActivity extends AppCompatActivity {
     private void redirectTo(Class<? extends AppCompatActivity> activityClass, final UserDataDTO userData) {
         final Intent intent = new Intent(LoginActivity.this, activityClass);
         if (userData != null) {
+            userData.setDeviceToken(NotificationService.getToken(getApplication()));
             intent.putExtra(USER_DATA_KEY, userData);
         }
         startActivity(intent);
@@ -154,6 +174,7 @@ public class LoginActivity extends AppCompatActivity {
             u.setActive(false);
             final String email = Objects.requireNonNull(account.getEmail());
             u.setEmail(email);
+            u.setDeviceToken(NotificationService.getToken(getApplication()));
             return u;
         }
 
