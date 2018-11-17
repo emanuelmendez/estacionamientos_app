@@ -3,6 +3,7 @@ package gbem.com.ar.estacionamientos.dashboard;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.design.widget.NavigationView;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.DefaultItemAnimator;
@@ -11,6 +12,7 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
@@ -57,6 +59,8 @@ public class HomeFragment extends Fragment implements SolicitudListener {
     Button btnVerEnMapa;
     @BindView(R.id.btnCancelarReserva)
     Button btnCancelarReserva;
+    @BindView(R.id.cv_no_reservations)
+    CardView cvNoReservations;
     @BindView(R.id.cv_driver_reservations)
     CardView cvDriverReservations;
     @BindView(R.id.cv_lender_lots)
@@ -141,6 +145,18 @@ public class HomeFragment extends Fragment implements SolicitudListener {
         dashboardService.getDriverCurrentReservation(getIdToken(Objects.requireNonNull(getActivity())))
                 .enqueue(new DriverLastReservationCallback());
     }
+
+    @OnClick(R.id.btn_no_rev_search)
+    public void onClickNoRevSearch() {
+        final NavigationDrawerActivity activity = (NavigationDrawerActivity) getActivity();
+        assert activity != null;
+        final MenuItem item =
+                ((NavigationView) activity.findViewById(R.id.nav_view))
+                        .getMenu().findItem(R.id.nav_search_parking);
+
+        activity.onNavigationItemSelected(item);
+    }
+
 
     @OnClick(R.id.btnVerEnMapa)
     public void onClickVerEnMapa() {
@@ -232,11 +248,14 @@ public class HomeFragment extends Fragment implements SolicitudListener {
         public void onResponse(@NonNull Call<ReservationDTO> call, @NonNull Response<ReservationDTO> response) {
             if (response.isSuccessful()) {
                 if (response.code() == 200) {
-                    cvDriverReservations.setVisibility(VISIBLE);
                     currentReservation = response.body();
 
                     if (currentReservation == null) {
                         cvDriverReservations.setVisibility(GONE);
+                        cvNoReservations.setVisibility(VISIBLE);
+                    } else {
+                        cvDriverReservations.setVisibility(VISIBLE);
+                        cvNoReservations.setVisibility(GONE);
                     }
 
                     txtReservaEn.setText(
@@ -246,6 +265,7 @@ public class HomeFragment extends Fragment implements SolicitudListener {
                     txtUsuarioReserva.setText(getString(R.string.txt_usuario_reserva, currentReservation.getLenderName()));
                 } else {
                     cvDriverReservations.setVisibility(GONE);
+                    cvNoReservations.setVisibility(VISIBLE);
                 }
             } else {
                 Toast.makeText(getActivity(), "Error", Toast.LENGTH_SHORT).show();

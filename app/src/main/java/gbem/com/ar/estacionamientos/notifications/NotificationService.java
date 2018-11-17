@@ -6,6 +6,7 @@ import android.support.v4.app.NotificationCompat;
 import android.support.v4.app.NotificationManagerCompat;
 import android.util.Log;
 
+import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.google.firebase.messaging.FirebaseMessagingService;
 import com.google.firebase.messaging.RemoteMessage;
 
@@ -74,7 +75,10 @@ public class NotificationService extends FirebaseMessagingService {
         super.onNewToken(s);
         getSharedPreferences("_", MODE_PRIVATE).edit().putString("fb", s).apply();
 
-        String signInToken = ((EstacionamientosApp) getApplication()).getLastSignedInAccount().getIdToken();
-        updateDeviceToken(signInToken, s);
+        final GoogleSignInAccount lastSignedInAccount = ((EstacionamientosApp) getApplication()).getLastSignedInAccount();
+        if (lastSignedInAccount != null) {
+            String signInToken = lastSignedInAccount.getIdToken();
+            updateDeviceToken(signInToken, s);
+        }
     }
 }
