@@ -39,6 +39,7 @@ public class ReservationInMapActivity extends FragmentActivity {
     private FusedLocationProviderClient mFusedLocationProviderClient;
     private boolean mLocationPermissionGranted = false;
     private Location mLastKnownLocation;
+    private boolean blockedPermission = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -82,7 +83,7 @@ public class ReservationInMapActivity extends FragmentActivity {
         if (ContextCompat.checkSelfPermission(
                 this.getApplicationContext(), ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
             mLocationPermissionGranted = true;
-        } else {
+        } else if (!blockedPermission) {
             ActivityCompat.requestPermissions(this,
                     new String[]{ACCESS_FINE_LOCATION},
                     PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION);
@@ -95,6 +96,10 @@ public class ReservationInMapActivity extends FragmentActivity {
                 requestCode == PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION
                         && grantResults.length > 0
                         && grantResults[0] == PackageManager.PERMISSION_GRANTED;
+        if (mLocationPermissionGranted)
+            updateLocationUI();
+        else
+            blockedPermission = true;
     }
 
     private void updateLocationUI() {

@@ -24,12 +24,18 @@ public final class Utils {
     public static final String RESERVATION_LOCATION = "reservation_location";
     private static final SimpleDateFormat sdf = new SimpleDateFormat("MM/dd/yyyy HH:mm:ss", Locale.US);
 
-    // ip a cambiar para pruebas
-    private static final String API_BASE_URL = "http://10.0.2.2:8080/web/";
-    private static final Retrofit RETROFIT = new Retrofit.Builder()
-            .baseUrl(API_BASE_URL)
-            .addConverterFactory(GsonConverterFactory.create())
-            .build();
+    private static Retrofit RETROFIT;
+
+    public static void setApiBaseUrl(String ip) {
+        String API_BASE_URL = ip != null && !ip.isEmpty() ?
+                ("http://" + ip + ":8080/web/") :
+                "http://10.0.2.2:8080/web/";
+
+        RETROFIT = new Retrofit.Builder()
+                .baseUrl(API_BASE_URL)
+                .addConverterFactory(GsonConverterFactory.create())
+                .build();
+    }
 
     /**
      * Método para reducir el código necesario para obtener la instancia de la app
