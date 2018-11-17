@@ -13,6 +13,9 @@ import android.widget.EditText;
 import android.widget.Spinner;
 import android.widget.Toast;
 
+import butterknife.BindView;
+import butterknife.ButterKnife;
+import gbem.com.ar.estacionamientos.EstacionamientosApp;
 import gbem.com.ar.estacionamientos.R;
 import gbem.com.ar.estacionamientos.api.dtos.VehicleDTO;
 import gbem.com.ar.estacionamientos.api.rest.IVehicleService;
@@ -28,6 +31,18 @@ public class VehicleDialogFragment extends AppCompatDialogFragment {
     private DialogInterface.OnDismissListener onDismissListener;
     private IDialogDismissListener iDialogDismissListener;
 
+    @BindView(R.id.spinner_brand)
+    Spinner spinnerBrand;
+
+    @BindView(R.id.spinner_color)
+    Spinner spinnerColor;
+
+    @BindView(R.id.txt_plate)
+    EditText plate;
+
+    @BindView(R.id.txt_model)
+    EditText model;
+
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
 
@@ -42,12 +57,13 @@ public class VehicleDialogFragment extends AppCompatDialogFragment {
         View v = LayoutInflater.from(getActivity())
                 .inflate(R.layout.dialog_vehicle_input_form, null);
 
+        ButterKnife.bind(this,v);
+
         if (iVehicleService == null) {
             iVehicleService = Utils.getService(IVehicleService.class);
         }
 
         //Brand spinner
-        Spinner spinnerBrand = v.findViewById(R.id.spinner_brand);
         ArrayAdapter<CharSequence> adapterBrand = ArrayAdapter.createFromResource(getActivity(),
                 R.array.brands_array, android.R.layout.simple_spinner_item);
         adapterBrand.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
@@ -55,7 +71,6 @@ public class VehicleDialogFragment extends AppCompatDialogFragment {
         spinnerBrand.setSelection(((ArrayAdapter)spinnerBrand.getAdapter()).getPosition(brandOptionVal));
 
         //Color spinner
-        Spinner spinnerColor = v.findViewById(R.id.spinner_color);
         ArrayAdapter<CharSequence> adapterColor = ArrayAdapter.createFromResource(getActivity(),
                 R.array.colors_array, android.R.layout.simple_spinner_item);
         adapterColor.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
@@ -63,8 +78,6 @@ public class VehicleDialogFragment extends AppCompatDialogFragment {
         spinnerColor.setSelection(((ArrayAdapter)spinnerColor.getAdapter()).getPosition(colorOptionVal));
 
         //Set Plate and Model
-        EditText plate = v.findViewById(R.id.txt_plate);
-        EditText model = v.findViewById(R.id.txt_model);
         plate.setText(plateVal);
         model.setText(modelVal);
 

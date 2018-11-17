@@ -17,6 +17,7 @@ import android.view.MenuItem;
 
 import gbem.com.ar.estacionamientos.R;
 import gbem.com.ar.estacionamientos.api.dtos.UserDataDTO;
+import gbem.com.ar.estacionamientos.parkinglots.ParkingLotFragment;
 import gbem.com.ar.estacionamientos.search.SearchFragment;
 import gbem.com.ar.estacionamientos.vehicles.VehicleFragment;
 
@@ -96,6 +97,9 @@ public class NavigationDrawerActivity extends AppCompatActivity
             case R.id.nav_search_parking:
                 startActivity(new Intent(this, SearchFragment.class));
                 return true;
+            case R.id.nav_parking_admin:
+                fragment = new ParkingLotFragment();
+                break;
             default:
                 fragment = HomeFragment.newInstance(userData);
                 break;

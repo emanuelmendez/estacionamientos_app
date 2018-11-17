@@ -50,4 +50,17 @@
     <string name="parking_lots_not_found">No se obtuvo resultados. Intente nuevamente cambiando los parámetros de búsqueda</string>
     <string name="pending_status">Pendiente</string>
     <string name="notif_channel">estacionamientos_notif_service</string>
+    <string name="parking_adm_title">Administrar estacionamientos</string>
+    <string name="add_parking_lot">Agregar estacionamiento</string>
+    <string name="lbl_seleccionar_provincia">Seleccioná Provincia</string>
+    <string name="lbl_seleccionar_pais">Seleccioná País</string>
+    <string name="btn_check_address_onmap">Confirmá la dirección en mapa</string>
+    <string name="lbl_description">Descripción</string>
+    <string name="lbl_lot_number">Número de lote</string>
+    <string name="lbl_ars">ARS </string>
+    <string name="lbl_lot_rate">Precio</string>
+    <string name="btn_edit_lot">Editar lote</string>
+    <string name="btn_edit_schedule">Editar horarios</string>
+    <string name="error_no_lot">¡Tenés que ingresar al menos un lote!</string>
+    <string name="lbl_addres">Dirección</string>
 </resources>
