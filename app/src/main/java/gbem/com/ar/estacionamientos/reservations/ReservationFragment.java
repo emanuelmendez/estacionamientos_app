@@ -91,6 +91,12 @@ public class ReservationFragment extends Fragment implements SolicitudListener {
     }
 
     @Override
+    public void onResume() {
+        super.onResume();
+        getLenderReservations();
+    }
+
+    @Override
     public void onConfirmar(ReservationDTO reservation) {
         Log.d(TAG, "onConfirmar: " + reservation);
         Objects.requireNonNull(getActivity());
