@@ -1,4 +1,4 @@
-package gbem.com.ar.estacionamientos.dashboard.lender;
+package gbem.com.ar.estacionamientos.reservations;
 
 import gbem.com.ar.estacionamientos.dashboard.ReservationDTO;
 
