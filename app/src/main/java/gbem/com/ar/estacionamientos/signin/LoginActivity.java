@@ -64,6 +64,7 @@ public class LoginActivity extends AppCompatActivity {
     }
 
     private void getDeviceToken() {
+        Log.i(TAG, "getDeviceToken: " + NotificationService.getToken(this));
         if (NotificationService.getToken(this) == null) {
             final Task<InstanceIdResult> task = FirebaseInstanceId.getInstance().getInstanceId();
             task.addOnSuccessListener(result ->

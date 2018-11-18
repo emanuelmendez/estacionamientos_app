@@ -1,4 +1,4 @@
-package gbem.com.ar.estacionamientos.dashboard.lender;
+package gbem.com.ar.estacionamientos.reservations;
 
 import android.annotation.SuppressLint;
 import android.support.annotation.NonNull;
@@ -13,6 +13,7 @@ import java.text.SimpleDateFormat;
 import java.util.List;
 
 import gbem.com.ar.estacionamientos.R;
+import gbem.com.ar.estacionamientos.api.dtos.Status;
 import gbem.com.ar.estacionamientos.dashboard.ReservationDTO;
 
 /**
@@ -50,7 +51,7 @@ public class SolicitudesAdapter extends RecyclerView.Adapter<SolicitudesAdapter.
         String hasta = "Fin: " + sdf.format(item.getTo());
         holder.txtDesde.setText(desde);
         holder.txtHasta.setText(hasta);
-        holder.txtStatus.setText(R.string.pending_status);
+        holder.txtStatus.setText(item.getStatus());
     }
 
     @Override
@@ -72,6 +73,19 @@ public class SolicitudesAdapter extends RecyclerView.Adapter<SolicitudesAdapter.
             btnConfirmar.setVisibility(View.VISIBLE);
         } else {
             btnConfirmar.setVisibility(View.GONE);
+            btnCancelar.setVisibility(View.GONE);
+        }
+    }
+
+    private void showCancelButton(View item) {
+        final View btnConfirmar = item.findViewById(R.id.btnConfirmar);
+        final View btnCancelar = item.findViewById(R.id.btnCancelar);
+
+        btnConfirmar.setVisibility(View.GONE);
+
+        if (btnCancelar.getVisibility() == View.GONE) {
+            btnCancelar.setVisibility(View.VISIBLE);
+        } else {
             btnCancelar.setVisibility(View.GONE);
         }
     }
@@ -108,9 +122,21 @@ public class SolicitudesAdapter extends RecyclerView.Adapter<SolicitudesAdapter.
                 listener.onRechazar(r);
                 showButtons(v.getRootView());
             } else {
-                showButtons(v);
+                Status status = Status.get(r.getStatus());
+                if (status != null) {
+                    switch (status) {
+                        case PENDING:
+                            showButtons(v);
+                            break;
+                        case APPROVED:
+                        case IN_PROGRESS:
+                            showCancelButton(v);
+                            break;
+                    }
+                }
             }
         }
     }
+
 
 }

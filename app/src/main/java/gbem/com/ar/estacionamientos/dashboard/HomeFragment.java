@@ -30,9 +30,10 @@ import butterknife.OnClick;
 import butterknife.Unbinder;
 import gbem.com.ar.estacionamientos.R;
 import gbem.com.ar.estacionamientos.api.dtos.UserDataDTO;
-import gbem.com.ar.estacionamientos.dashboard.lender.SolicitudListener;
-import gbem.com.ar.estacionamientos.dashboard.lender.SolicitudesAdapter;
 import gbem.com.ar.estacionamientos.notifications.NotificationService;
+import gbem.com.ar.estacionamientos.reservations.LenderReservationsService;
+import gbem.com.ar.estacionamientos.reservations.SolicitudListener;
+import gbem.com.ar.estacionamientos.reservations.SolicitudesAdapter;
 import gbem.com.ar.estacionamientos.utils.Utils;
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -48,7 +49,7 @@ public class HomeFragment extends Fragment implements SolicitudListener {
 
     private static final String TAG = HomeFragment.class.getSimpleName();
     private final List<ReservationDTO> lenderReservations = new ArrayList<>();
-
+    private final LenderReservationsService lenderReservationsService;
     @BindView(R.id.txtReservaEn)
     TextView txtReservaEn;
     @BindView(R.id.txtFechaReserva)
@@ -67,7 +68,6 @@ public class HomeFragment extends Fragment implements SolicitudListener {
     CardView cvLenderLots;
     @BindView(R.id.rvSolicitudes)
     RecyclerView rvSolicitudes;
-
     private SolicitudesAdapter adapter;
     private ReservationDTO currentReservation;
     private Unbinder unbinder;
@@ -75,7 +75,7 @@ public class HomeFragment extends Fragment implements SolicitudListener {
     private DashboardService dashboardService;
 
     public HomeFragment() {
-        // Required empty public constructor
+        lenderReservationsService = Utils.getService(LenderReservationsService.class);
     }
 
     public static HomeFragment newInstance(UserDataDTO userData) {
@@ -173,6 +173,7 @@ public class HomeFragment extends Fragment implements SolicitudListener {
                     @Override
                     public void onResponse(@NonNull Call<Void> call, @NonNull Response<Void> response) {
                         if (!response.isSuccessful()) {
+                            Log.e(TAG, "Error code: " + response.code());
                             Toast.makeText(getActivity(), "Error al cancelar la reserva", Toast.LENGTH_LONG).show();
                         }
 
@@ -201,13 +202,14 @@ public class HomeFragment extends Fragment implements SolicitudListener {
     public void onConfirmar(ReservationDTO reservation) {
         Log.d(TAG, "onConfirmar: " + reservation);
         Objects.requireNonNull(getActivity());
-        dashboardService.acceptReservation(getIdToken(getActivity()), reservation.getId())
+        lenderReservationsService.acceptReservation(getIdToken(getActivity()), reservation.getId())
                 .enqueue(new Callback<Void>() {
                     @Override
                     public void onResponse(@NonNull Call<Void> call, @NonNull Response<Void> response) {
                         if (response.isSuccessful()) {
                             Toast.makeText(getActivity(), "Aceptada", Toast.LENGTH_SHORT).show();
                         } else {
+                            Log.e(TAG, "Error code: " + response.code());
                             Toast.makeText(getActivity(), "Error al intentar confirmar la reserva", Toast.LENGTH_SHORT).show();
                         }
                         getLenderReservations(); // actualizamos la vista
@@ -224,7 +226,7 @@ public class HomeFragment extends Fragment implements SolicitudListener {
     public void onRechazar(ReservationDTO reservation) {
         Log.d(TAG, "onRechazar: " + reservation);
         Objects.requireNonNull(getActivity());
-        dashboardService.rejectOrCancelLenderReservation(getIdToken(getActivity()), reservation.getId())
+        lenderReservationsService.rejectOrCancelLenderReservation(getIdToken(getActivity()), reservation.getId())
                 .enqueue(new Callback<Void>() {
                     @Override
                     public void onResponse(@NonNull Call<Void> call, @NonNull Response<Void> response) {

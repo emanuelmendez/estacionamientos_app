@@ -27,6 +27,16 @@ public enum Status {
         return description;
     }
 
+    public static Status get(String statusName) {
+        for (Status s : values()) {
+            if (s.description.equals(statusName)) {
+                return s;
+            }
+        }
+
+        return null;
+    }
+
     @Override
     public String toString() {
         return description;
