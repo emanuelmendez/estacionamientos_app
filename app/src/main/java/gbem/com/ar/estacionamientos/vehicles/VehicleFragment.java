@@ -26,6 +26,8 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
+import static gbem.com.ar.estacionamientos.utils.Utils.getIdToken;
+
 public class VehicleFragment extends Fragment implements IDialogDismissListener{
 
     private RecyclerView mRVVehicleList;
@@ -73,7 +75,7 @@ public class VehicleFragment extends Fragment implements IDialogDismissListener{
             iVehicleService = Utils.getService(IVehicleService.class);
         }
 
-        Call<List<VehicleDTO>> call = iVehicleService.getVehicleByUserId(1); //TODO debe tomar el id de usuario loggeado
+        Call<List<VehicleDTO>> call = iVehicleService.getVehicleByUserId(getIdToken(this.getActivity()),1); //TODO debe tomar el id de usuario loggeado
 
         call.enqueue(new Callback<List<VehicleDTO>>() {
             @Override
@@ -86,7 +88,7 @@ public class VehicleFragment extends Fragment implements IDialogDismissListener{
                         Log.i("TAG","ENTRO POR 401");
                         break;
                     default:
-                        Log.i("TAG","ENTRO POR DEFAULT");
+                        Log.i("TAG","ENTRO POR DEFAULT "+response.code());
                         break;
                 }
             }

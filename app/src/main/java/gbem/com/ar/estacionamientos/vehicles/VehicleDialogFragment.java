@@ -25,6 +25,8 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
+import static gbem.com.ar.estacionamientos.utils.Utils.getIdToken;
+
 public class VehicleDialogFragment extends AppCompatDialogFragment {
 
     private IVehicleService iVehicleService;
@@ -95,9 +97,9 @@ public class VehicleDialogFragment extends AppCompatDialogFragment {
                 jsonData.setColor(spinnerColor.getSelectedItem().toString());
 
                 if(vehicleId == 0){
-                    saveNewVehicle = iVehicleService.saveNewVehicle(1,jsonData);//TODO reemplazar con id de usuario loggeado
+                    saveNewVehicle = iVehicleService.saveNewVehicle(getIdToken(getActivity()),1,jsonData);//TODO reemplazar con id de usuario loggeado
                 }else{
-                    saveNewVehicle = iVehicleService.editVehicle(1,vehicleId,jsonData);//TODO reemplazar con id de usuario loggeado
+                    saveNewVehicle = iVehicleService.editVehicle(getIdToken(getActivity()),1,vehicleId,jsonData);//TODO reemplazar con id de usuario loggeado
                 }
                 saveNewVehicle.enqueue(new Callback<ResponseBody>() {
                     @Override

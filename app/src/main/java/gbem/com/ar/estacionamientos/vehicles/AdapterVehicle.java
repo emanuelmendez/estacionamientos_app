@@ -1,5 +1,6 @@
 package gbem.com.ar.estacionamientos.vehicles;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.os.Bundle;
@@ -29,6 +30,8 @@ import okhttp3.ResponseBody;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
+
+import static gbem.com.ar.estacionamientos.utils.Utils.getIdToken;
 
 public class AdapterVehicle extends RecyclerView.Adapter<RecyclerView.ViewHolder> implements IDialogDismissListener{
     private Context context;
@@ -95,7 +98,7 @@ public class AdapterVehicle extends RecyclerView.Adapter<RecyclerView.ViewHolder
                         //TODO debe tomar el id de usuario loggeado
                         String idVehicle = (v.getTag().toString()).split("_")[1];
                         String rowPosition = (v.getTag().toString()).split("_")[0];
-                        Call<ResponseBody> deleteVehicleRequest = iVehicleService.deleteVehicleById(1,Long.parseLong(idVehicle));
+                        Call<ResponseBody> deleteVehicleRequest = iVehicleService.deleteVehicleById(getIdToken(new Activity()),1,Long.parseLong(idVehicle));
                         deleteVehicleRequest.enqueue(new Callback<ResponseBody>() {
                             @Override
                             public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
@@ -110,7 +113,7 @@ public class AdapterVehicle extends RecyclerView.Adapter<RecyclerView.ViewHolder
                                         Log.i("TAG","ENTRO POR 401");
                                         break;
                                     default:
-                                        Log.i("TAG","ENTRO POR DEFAULT");
+                                        Log.i("TAG","ENTRO POR DEFAULT "+response.code());
                                         break;
                                 }
                             }
