@@ -60,7 +60,7 @@ public class SignUpActivity extends AppCompatActivity {
 
         userData = (UserDataDTO) Objects.requireNonNull(getIntent().getExtras()).get(USER_DATA_KEY);
 
-        txtHolaLabel.setText(getString(R.string.signup_hola, Objects.requireNonNull(userData)));
+        txtHolaLabel.setText(getString(R.string.signup_hola, Objects.requireNonNull(userData).getName()));
     }
 
 

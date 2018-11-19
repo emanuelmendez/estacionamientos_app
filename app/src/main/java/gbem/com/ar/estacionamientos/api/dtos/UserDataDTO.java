@@ -125,8 +125,8 @@ public final class UserDataDTO implements Serializable {
     public String toString() {
         return "UserDataDTO{" +
                 "username='" + username + '\'' +
-                ", hasVehicles=" + vehicles.size() +
-                ", hasParkingLots=" + parkingLots.size() +
+                ", hasVehicles=" + getVehicles().size() +
+                ", hasParkingLots=" + getParkingLots().size() +
                 '}';
     }
 }
