@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:clickable="true"
+    android:orientation="horizontal"
+    android:padding="10dp">
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceMedium"
+        android:text="Lote"
+        android:id="@+id/textLotNumber"
+        android:layout_alignParentLeft="true"/>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceSmall"
+        android:text="@string/lbl_lot_rate"
+        android:id="@+id/textLotRate"
+        android:layout_marginLeft="5dp"
+        android:layout_below="@id/textLotNumber"/>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceSmall"
+        android:text="@string/lbl_description"
+        android:id="@+id/textLotDescription"
+        android:layout_marginLeft="5dp"
+        android:layout_below="@id/textLotRate"
+        android:textColor="#666"/>
+
+    <ImageButton
+        android:id="@+id/btn_remove_lot"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentRight="true"
+        android:layout_marginLeft="5dp"
+        android:layout_marginRight="0dp"
+        android:layout_weight="1"
+        android:backgroundTint="@android:color/transparent"
+        android:paddingRight="0dp"
+        android:scaleType="fitStart"
+        android:src="@drawable/ic_remove"
+        android:tint="@android:color/holo_red_dark"
+        android:visibility="visible"
+        tools:paddingLeft="0dp" />
+
+</RelativeLayout>

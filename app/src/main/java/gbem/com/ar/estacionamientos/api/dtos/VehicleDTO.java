@@ -4,7 +4,7 @@ import java.io.Serializable;
 
 public class VehicleDTO implements Serializable {
 
-    private static final long serialVersionUID = -2650522845717940780L;
+    private static final long serialVersionUID = 6518364481958249856L;
 
     private long id;
 
