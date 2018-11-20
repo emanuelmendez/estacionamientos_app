@@ -73,4 +73,5 @@
     <string name="sunday">D</string>
     <string name="lbl_time_from">Hora de inicio</string>
     <string name="lbl_time_to">Hora de fin</string>
+    <string name="star">&#9733;</string>
 </resources>
