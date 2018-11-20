@@ -21,7 +21,6 @@ import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import static gbem.com.ar.estacionamientos.utils.Utils.getIdToken;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -38,6 +37,8 @@ import okhttp3.ResponseBody;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
+
+import static gbem.com.ar.estacionamientos.utils.Utils.getIdToken;
 
 public class AddParkingLotFragment extends Fragment {
 
