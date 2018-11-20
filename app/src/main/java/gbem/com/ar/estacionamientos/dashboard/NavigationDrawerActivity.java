@@ -17,6 +17,7 @@ import android.view.MenuItem;
 
 import gbem.com.ar.estacionamientos.R;
 import gbem.com.ar.estacionamientos.api.dtos.UserDataDTO;
+import gbem.com.ar.estacionamientos.parkinglots.ParkingLotFragment;
 import gbem.com.ar.estacionamientos.reservations.ReservationFragment;
 import gbem.com.ar.estacionamientos.search.SearchFragment;
 import gbem.com.ar.estacionamientos.vehicles.VehicleFragment;
@@ -66,12 +67,23 @@ public class NavigationDrawerActivity extends AppCompatActivity
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
+        // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.navigation_drawer, menu);
         return true;
     }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
+        // Handle action bar item clicks here. The action bar will
+        // automatically handle clicks on the Home/Up button, so long
+        // as you specify a parent activity in AndroidManifest.xml.
+        int id = item.getItemId();
+
+        //noinspection SimplifiableIfStatement
+       /* if (id == R.id.action_settings) {
+            return true;
+        }*/
+
         return super.onOptionsItemSelected(item);
     }
 
@@ -88,6 +100,9 @@ public class NavigationDrawerActivity extends AppCompatActivity
                 return true;
             case R.id.nav_reservation_admin:
                 fragment = new ReservationFragment();
+                break;
+            case R.id.nav_parking_admin:
+                fragment = new ParkingLotFragment();
                 break;
             default:
                 fragment = HomeFragment.newInstance(userData);
@@ -112,5 +127,4 @@ public class NavigationDrawerActivity extends AppCompatActivity
         DrawerLayout drawer = findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
     }
-
 }

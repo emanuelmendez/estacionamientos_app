@@ -28,6 +28,15 @@ public class ParkingLotResultDTO implements Serializable {
     private int toHour;
     private String userFullName;
     private String value;
+    private Double score;
+
+    public Double getScore() {
+        return score;
+    }
+
+    public void setScore(Double score) {
+        this.score = score;
+    }
 
     public String getUserFullName() {
         return userFullName;

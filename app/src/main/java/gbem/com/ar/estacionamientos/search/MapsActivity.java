@@ -158,7 +158,15 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             final MarkerOptions marker = new MarkerOptions();
             final LatLng coordinates = Utils.createLatLng(dto.getCoordinates());
             marker.position(coordinates);
-            marker.title(dto.getDescription() + " en " + dto.getStreetAddress());
+
+            String title = "";
+            if (dto.getScore() != null) {
+                title += dto.getScore() + getString(R.string.star) + " ";
+            }
+
+            title += dto.getDescription() + " en " + dto.getStreetAddress();
+
+            marker.title(title);
             marker.snippet("Ofrecido por " + dto.getUserFullName());
             final Marker m = mMap.addMarker(marker);
             markers.put(m, dto);

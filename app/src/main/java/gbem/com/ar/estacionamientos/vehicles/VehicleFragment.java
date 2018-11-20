@@ -9,11 +9,14 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageButton;
 import android.widget.Toast;
 
 import java.util.ArrayList;
 import java.util.List;
 
+import butterknife.BindView;
+import butterknife.ButterKnife;
 import gbem.com.ar.estacionamientos.R;
 import gbem.com.ar.estacionamientos.api.dtos.VehicleDTO;
 import gbem.com.ar.estacionamientos.api.rest.IVehicleService;
@@ -22,16 +25,23 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
+import static gbem.com.ar.estacionamientos.utils.Utils.getIdToken;
+
 public class VehicleFragment extends Fragment implements IDialogDismissListener{
 
     private RecyclerView mRVVehicleList;
     private AdapterVehicle mAdapter;
     private IVehicleService iVehicleService;
 
+    @BindView(R.id.button_add_vehicle)
+    ImageButton addVehicle;
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.activity_vehicle, null, false);
+        ButterKnife.bind(this,view);
+
         return view;
     }
 
@@ -40,7 +50,7 @@ public class VehicleFragment extends Fragment implements IDialogDismissListener{
         super.onViewCreated(view, savedInstanceState);
 
         //Formulario de alta de vehículo
-        view.findViewById(R.id.button_add_vehicle).setOnClickListener(v -> {
+        addVehicle.setOnClickListener(v -> {
             VehicleDialogFragment vehicleDialogFragment = new VehicleDialogFragment();
             Bundle bundle = new Bundle();
             bundle.putString("BRAND_TO_SET","");
@@ -64,7 +74,7 @@ public class VehicleFragment extends Fragment implements IDialogDismissListener{
             iVehicleService = Utils.getService(IVehicleService.class);
         }
 
-        Call<List<VehicleDTO>> call = iVehicleService.getVehicleByUserId(1); //TODO debe tomar el id de usuario loggeado
+        Call<List<VehicleDTO>> call = iVehicleService.getVehicleByUserId(getIdToken(this.getActivity()),1); //TODO debe tomar el id de usuario loggeado
 
         call.enqueue(new Callback<List<VehicleDTO>>() {
             @Override
@@ -77,7 +87,7 @@ public class VehicleFragment extends Fragment implements IDialogDismissListener{
                         Log.i("TAG","ENTRO POR 401");
                         break;
                     default:
-                        Log.i("TAG","ENTRO POR DEFAULT");
+                        Log.i("TAG","ENTRO POR DEFAULT "+response.code());
                         break;
                 }
             }

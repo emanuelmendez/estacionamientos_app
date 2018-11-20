@@ -1,0 +1,104 @@
+package gbem.com.ar.estacionamientos.parkinglots;
+
+
+import android.os.Bundle;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentTransaction;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
+import android.util.Log;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.Toast;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import gbem.com.ar.estacionamientos.R;
+import gbem.com.ar.estacionamientos.api.dtos.AddressDTO;
+import gbem.com.ar.estacionamientos.api.dtos.ParkingLotDTO;
+import gbem.com.ar.estacionamientos.api.rest.IParkingLotService;
+import gbem.com.ar.estacionamientos.utils.Utils;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
+
+import static gbem.com.ar.estacionamientos.utils.Utils.getIdToken;
+
+public class ParkingLotFragment extends Fragment {
+
+    private RecyclerView mRVAddLotsList;
+    private AdapterParkingLot mAdapter;
+    private IParkingLotService iParkingLotService;
+    List<ParkingLotDTO> lotList = new ArrayList<>();
+    AddressDTO address = new AddressDTO();
+
+    @Override
+    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+                             Bundle savedInstanceState) {
+        View view = inflater.inflate(R.layout.fragment_parking_lot, container, false);
+        return view;
+    }
+
+    @Override
+    public void onViewCreated(View view, Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+
+        getParkingLotJson();
+
+        //Formulario de alta de estacionamiento
+        view.findViewById(R.id.button_add_parking_lot).setOnClickListener(v -> {
+            Fragment fragment = new AddParkingLotFragment();
+            FragmentManager fragmentManager = getFragmentManager();
+            FragmentTransaction ft = fragmentManager.beginTransaction();
+
+            ft.replace(R.id.screen_area, fragment).commit();
+        });
+    }
+
+    public void getParkingLotJson(){
+
+        if (iParkingLotService == null) {
+            iParkingLotService = Utils.getService(IParkingLotService.class);
+        }
+
+        Call<List<ParkingLotDTO>> call = iParkingLotService.getParkingLotsByUser(getIdToken(this.getActivity()),1); //TODO debe tomar el id de usuario loggeado
+
+        call.enqueue(new Callback<List<ParkingLotDTO>>() {
+            @Override
+            public void onResponse(Call<List<ParkingLotDTO>> call, Response<List<ParkingLotDTO>> response) {
+                switch (response.code()) {
+                    case 200:
+                        generateDataList(response.body());
+                        break;
+                    case 401:
+                        Log.i("TAG","ENTRO POR 401");
+                        break;
+                    default:
+                        Log.i("TAG","ENTRO POR DEFAULT "+response.code());
+                        break;
+                }
+            }
+
+            @Override
+            public void onFailure(Call<List<ParkingLotDTO>> call, Throwable t) {
+                Toast.makeText(getActivity(), "Error al cargar listado de vehículos", Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
+
+    private void generateDataList(List<ParkingLotDTO> result) {
+
+        try {
+            mRVAddLotsList = getView().findViewById(R.id.parkingLotList);
+            mAdapter = new AdapterParkingLot(getContext(), result);
+            mRVAddLotsList.setAdapter(mAdapter);
+            mRVAddLotsList.setLayoutManager(new LinearLayoutManager(getContext()));
+
+        } catch (Exception e) {
+            Toast.makeText(getActivity(), e.toString(), Toast.LENGTH_LONG).show();
+        }
+    }
+}
