@@ -14,6 +14,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.TextView;
 
 import gbem.com.ar.estacionamientos.R;
 import gbem.com.ar.estacionamientos.api.dtos.UserDataDTO;
@@ -50,6 +51,9 @@ public class NavigationDrawerActivity extends AppCompatActivity
         if (getIntent().getExtras() != null && getIntent().getExtras().get(USER_DATA_KEY) != null) {
             userData = (UserDataDTO) getIntent().getExtras().get(USER_DATA_KEY);
         }
+
+        final TextView txtUser = navigationView.getHeaderView(0).findViewById(R.id.txtUser);
+        txtUser.setText(userData.getName());
 
         onNavigationItemSelected(navigationView.getMenu().findItem(R.id.nav_home));
 
