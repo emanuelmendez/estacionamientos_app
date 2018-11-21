@@ -112,7 +112,7 @@ public class HomeFragment extends Fragment implements SolicitudListener {
         rvSolicitudes.setItemAnimator(new DefaultItemAnimator());
         rvSolicitudes.addItemDecoration(new DividerItemDecoration(getActivity(), LinearLayoutManager.VERTICAL));
 
-        adapter = new SolicitudesAdapter(lenderReservations, this);
+        adapter = new SolicitudesAdapter(lenderReservations, this, getActivity());
         rvSolicitudes.setAdapter(adapter);
 
         if (dashboardService == null)

@@ -84,7 +84,7 @@ public class ReservationFragment extends Fragment implements SolicitudListener {
 
             recyclerView.setLayoutManager(new LinearLayoutManager(context));
 
-            adapter = new SolicitudesAdapter(reservations, this);
+            adapter = new SolicitudesAdapter(reservations, this, context);
             recyclerView.setAdapter(adapter);
         }
         return view;
