@@ -177,7 +177,7 @@
                     android:layout_marginEnd="8dp"
                     android:layout_marginBottom="8dp"
                     android:textColor="@color/colorPrimaryDark"
-                    app:layout_constraintBottom_toTopOf="@+id/btnVerEnMapa"
+                    app:layout_constraintBottom_toTopOf="@+id/divider"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintTop_toBottomOf="@+id/txtReservaTitle"
                     tools:text="PENDING" />
