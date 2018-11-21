@@ -1,0 +1,196 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:id="@+id/edit_parking_lot_layout2"
+    tools:context=".parkinglots.EditParkingLotFragment">
+
+    <LinearLayout
+        android:id="@+id/linearLayout_add_parking_lot"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="8dp">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="horizontal">
+
+            <EditText
+                android:id="@+id/txt_lot_number"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="0dp"
+                android:layout_marginTop="7dp"
+                android:layout_weight="2"
+                android:hint="@string/lbl_lot_number"
+                android:inputType="text"
+                android:singleLine="true"
+                android:textSize="14sp"
+                tools:textSize="14sp" />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="0dp"
+                android:layout_marginTop="7dp"
+                android:text="@string/lbl_ars"
+                android:textSize="14sp"
+                android:gravity="end"
+                android:layout_weight="3"/>
+
+            <EditText
+                android:id="@+id/num_lot_rate"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="0dp"
+                android:layout_marginTop="7dp"
+                android:hint="@string/lbl_lot_rate"
+                android:inputType="number"
+                android:layout_weight="2"
+                android:textSize="14sp"
+                tools:ignore="LabelFor,UnusedAttribute" />
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/weekdays"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center_vertical"
+            android:orientation="horizontal"
+            android:padding="4dp">
+            <CheckBox
+                android:id="@+id/chk_monday_lot"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="@string/monday" />
+            <CheckBox
+                android:id="@+id/chk_tuesday_lot"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="@string/tuesday" />
+            <CheckBox
+                android:id="@+id/chk_wednesday_lot"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="@string/wednesday" />
+            <CheckBox
+                android:id="@+id/chk_thursday_lot"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="@string/thursday" />
+            <CheckBox
+                android:id="@+id/chk_friday_lot"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="@string/friday" />
+            <CheckBox
+                android:id="@+id/chk_saturday_lot"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="@string/saturday" />
+            <CheckBox
+                android:id="@+id/chk_sunday_lot"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="@string/sunday" />
+        </LinearLayout>
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center_vertical"
+            android:orientation="horizontal"
+            android:padding="4dp">
+
+            <TextView
+                android:id="@+id/lbl_time_from"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:layout_weight="6"
+                android:layout_marginBottom="8dp"
+                android:layout_marginTop="8dp"
+                android:text="@string/lbl_time_from"
+                android:visibility="visible" />
+
+            <Spinner
+                android:id="@+id/spinner_time_from"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:layout_marginBottom="8dp"
+                android:layout_marginTop="8dp"
+                android:dropDownWidth="match_parent"
+                android:entries="@array/schedule_time_array"
+                android:textSize="14sp" />
+
+            <TextView
+                android:id="@+id/lbl_time_to"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:layout_weight="6"
+                android:layout_marginBottom="8dp"
+                android:layout_marginTop="8dp"
+                android:text="@string/lbl_time_to"
+                android:visibility="visible" />
+
+            <Spinner
+                android:id="@+id/spinner_time_to"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:layout_marginBottom="8dp"
+                android:layout_marginTop="8dp"
+                android:dropDownWidth="match_parent"
+                android:entries="@array/schedule_time_array"
+                android:textSize="14sp" />
+        </LinearLayout>
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <EditText
+                android:id="@+id/txt_lot_description"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:hint="@string/lbl_description"
+                android:inputType="text"
+                android:singleLine="true"
+                android:textSize="14sp"
+                tools:textSize="14sp" />
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="horizontal">
+
+            <Button
+                android:id="@+id/btn_save_parking_lot"
+                android:layout_width="match_parent"
+                android:layout_height="40dp"
+                android:layout_gravity="bottom"
+                android:layout_weight="1"
+                android:text="@string/save" />
+            <Button
+                android:id="@+id/btn_cancel_parking_lot"
+                android:layout_width="match_parent"
+                android:layout_height="40dp"
+                android:layout_weight="1"
+                android:layout_gravity="bottom"
+                android:text="@string/cancel" />
+        </LinearLayout>
+    </LinearLayout>
+</FrameLayout>

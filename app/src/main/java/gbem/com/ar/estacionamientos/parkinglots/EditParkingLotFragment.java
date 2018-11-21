@@ -1,31 +1,21 @@
 package gbem.com.ar.estacionamientos.parkinglots;
 
-import android.location.Address;
-import android.location.Geocoder;
+
 import android.os.Bundle;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
-import android.widget.Button;
 import android.widget.CheckBox;
-import android.widget.EditText;
 import android.widget.FrameLayout;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
-
-import static gbem.com.ar.estacionamientos.utils.Utils.getIdToken;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -41,25 +31,12 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
-public class AddParkingLotFragment extends Fragment {
+import static gbem.com.ar.estacionamientos.utils.Utils.getIdToken;
 
-    private RecyclerView mRVAddLotsList;
-    private AdapterAddParkingLot mAdapter;
+public class EditParkingLotFragment extends Fragment {
+
     private IParkingLotService iParkingLotService;
-    List<ParkingLotDTO> tempList = new ArrayList<>();
-    AddressDTO tempAddress = new AddressDTO();
-
-    @BindView(R.id.txt_street_address)
-    EditText streetAddress;
-
-    @BindView(R.id.spinner_cities)
-    Spinner spinnerCity;
-
-    @BindView(R.id.spinner_country)
-    Spinner spinnerCountry;
-
-    @BindView(R.id.btnVerEnMapa)
-    Button showAddressInMap;
+    long currentLotId;
 
     @BindView(R.id.txt_lot_number)
     TextView lotNumber;
@@ -70,16 +47,7 @@ public class AddParkingLotFragment extends Fragment {
     @BindView(R.id.txt_lot_description)
     TextView lotDescription;
 
-    @BindView(R.id.btn_add_lot)
-    Button addLot;
-
-    @BindView(R.id.btn_save_parking_lot)
-    Button saveParkingLot;
-
-    @BindView(R.id.btn_cancel_parking_lot)
-    Button cancelParkingLot;
-
-    @BindView(R.id.add_parking_lot_layout)
+    @BindView(R.id.edit_parking_lot_layout2)
     FrameLayout layout;
 
     @BindView(R.id.chk_monday_lot)
@@ -112,34 +80,51 @@ public class AddParkingLotFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_add_parking_lot, container, false);
+
+        Bundle args = getArguments();
+        String lotNumVal = args.getString("LOTNUMBER_TO_SET");
+        String lotRateVal = args.getString("RATE_TO_SET");
+        String lotDescVal = args.getString("DESCRIPTION_TO_SET");
+        String scheduleVal = args.getString("SCHEDULE_TO_SET");
+        long lotId = args.getLong("PARKING_ID");
+
+        View view = inflater.inflate(R.layout.fragment_edit_parking_lot2, container, false);
         ButterKnife.bind(this,view);
 
-        //City spinner
-        ArrayAdapter<CharSequence> adapterCity = ArrayAdapter.createFromResource(getActivity(),
-                R.array.cities_array, android.R.layout.simple_spinner_item);
-        adapterCity.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        spinnerCity.setAdapter(adapterCity);
-
-        //Country spinner
-        ArrayAdapter<CharSequence> adapterCountry = ArrayAdapter.createFromResource(getActivity(),
-                R.array.countries_array, android.R.layout.simple_spinner_item);
-        adapterCountry.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        spinnerCountry.setAdapter(adapterCountry);
-
         //TimeFrom and TimeTo spinner
+        String timeToSet = scheduleVal.split("de ")[1];
+        String valTimeFrom = timeToSet.split(":")[0];
+        String valTimeTo = (timeToSet.split("a ")[1]).split(":")[0];
         ArrayAdapter<CharSequence> adapterTime = ArrayAdapter.createFromResource(getActivity(),
                 R.array.schedule_time_array, android.R.layout.simple_spinner_item);
         adapterTime.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         timeFrom.setAdapter(adapterTime);
+        timeFrom.setSelection(((ArrayAdapter)timeFrom.getAdapter()).getPosition(valTimeFrom.length() == 1 ? "0"+valTimeFrom+":00" : valTimeFrom+":00"));
         timeTo.setAdapter(adapterTime);
+        timeTo.setSelection(((ArrayAdapter)timeTo.getAdapter()).getPosition(valTimeTo.length() == 1 ? "0"+valTimeTo+":00" : valTimeTo+":00"));
 
-        addLotToList();
+        lotNumber.setText(lotNumVal);
+        lotRate.setText(lotRateVal.split(" ")[1]);
+        lotDescription.setText(lotDescVal);
+
+        String[] days = scheduleVal.split(", ");
+
+        for(String d : days){
+            if(d.equals(getContext().getString(R.string.monday))){ chkMonday.setChecked(true); }
+            if(d.equals(getContext().getString(R.string.tuesday))){ chkTuesday.setChecked(true); }
+            if(d.equals(getContext().getString(R.string.wednesday))){ chkWednesday.setChecked(true); }
+            if(d.equals(getContext().getString(R.string.thursday))){ chkThursday.setChecked(true); }
+            if(d.equals(getContext().getString(R.string.friday))){ chkFriday.setChecked(true); }
+            if(d.equals(getContext().getString(R.string.saturday))){ chkSaturday.setChecked(true); }
+            if(d.equals(getContext().getString(R.string.sunday))){ chkSunday.setChecked(true); }
+        }
+
+        currentLotId = lotId;
         return view;
     }
 
-    @OnClick(R.id.btn_add_lot)
-    public void addLotToList(){
+    @OnClick(R.id.btn_save_parking_lot)
+    public void saveParkingLot(){
 
         ParkingLotDTO pl1 = new ParkingLotDTO();
         ScheduleDTO sch = new ScheduleDTO();
@@ -170,91 +155,14 @@ public class AddParkingLotFragment extends Fragment {
         sch.setFromHour(Integer.parseInt(timeFrom.getSelectedItem().toString().split(":")[0]));
         sch.setToHour(Integer.parseInt(timeTo.getSelectedItem().toString().split(":")[0]));
 
+        pl1.setId(currentLotId);
         pl1.setActive(true);
         pl1.setScheduleDTO(sch);
         pl1.setDescription(lotDescription.getText().toString());
         pl1.setLotNumber(Integer.parseInt(lotNumber.getText().toString()));
         pl1.setValue(Long.parseLong(lotRate.getText().toString()));
-        tempList.add(pl1);
 
-        resetLotForm();
-        generateDataList();
-    }
-
-    private void generateDataList() {
-
-        try {
-            mRVAddLotsList = getView().findViewById(R.id.parkingLotList);
-            mAdapter = new AdapterAddParkingLot(getContext(), tempList);
-            mRVAddLotsList.setAdapter(mAdapter);
-            mRVAddLotsList.setLayoutManager(new LinearLayoutManager(getContext()));
-
-        } catch (Exception e) {
-            Toast.makeText(getActivity(), e.toString(), Toast.LENGTH_LONG).show();
-        }
-    }
-
-    private void resetLotForm(){
-        lotNumber.setText("");
-        lotRate.setText("");
-        lotDescription.setText("");
-        chkMonday.setChecked(false);
-        chkTuesday.setChecked(false);
-        chkWednesday.setChecked(false);
-        chkThursday.setChecked(false);
-        chkFriday.setChecked(false);
-        chkSaturday.setChecked(false);
-        chkSunday.setChecked(false);
-        timeFrom.setSelection(0);
-        timeTo.setSelection(0);
-    }
-
-    @OnClick(R.id.btn_save_parking_lot)
-    public void saveParkingLot(){
-
-        if(streetAddress.getText().length() == 0){
-            streetAddress.setError("Campo requerido");
-            return;
-        }else if(tempList.size() == 0){
-            final Snackbar snackbar = Snackbar.make(layout, R.string.error_no_lot, Snackbar.LENGTH_LONG);
-            snackbar.show();
-            return;
-        }
-
-        streetAddress.setError(null);
-
-        final Geocoder geocoder = new Geocoder(getContext());
-        final List<Address> addresses;
-        String fullAddress = streetAddress.getText().toString()
-                +", "+spinnerCity.getSelectedItem().toString()
-                +", "+spinnerCountry.getSelectedItem().toString();
-        try {
-            addresses = geocoder.getFromLocationName(fullAddress, 1);
-        } catch (IOException e) {
-            Log.e("Error", "Geocoder exception: " + e.getMessage(), e);
-            Toast.makeText(getContext(), R.string.location_search_error, Toast.LENGTH_SHORT).show();
-            return;
-        }
-        if (addresses.isEmpty()) {
-            streetAddress.setError(getString(R.string.location_search_not_found));
-            return;
-        }
-
-        final Address address = addresses.get(0);
-
-        tempAddress.setLatitude(address.getLatitude());
-        tempAddress.setLongitude(address.getLongitude());
-        tempAddress.setStreetAddress(streetAddress.getText().toString());
-        tempAddress.setCity(spinnerCity.getSelectedItem().toString());
-        tempAddress.setState(spinnerCity.getSelectedItem().toString());
-        tempAddress.setCountry(spinnerCountry.getSelectedItem().toString());
-        tempAddress.setPostalCode(address.getPostalCode());
-
-        for(ParkingLotDTO pl : tempList){
-            pl.setAddressDTO(tempAddress);
-        }
-
-        saveData();
+        saveData(pl1);
     }
 
     @OnClick(R.id.btn_cancel_parking_lot)
@@ -267,23 +175,19 @@ public class AddParkingLotFragment extends Fragment {
         ft.replace(R.id.screen_area, fragment).commit();
     }
 
-    public void saveData(){
+    public void saveData(ParkingLotDTO dataToSend){
 
         if (iParkingLotService == null) {
             iParkingLotService = Utils.getService(IParkingLotService.class);
         }
 
-        Call<ResponseBody> call = iParkingLotService.addNewParkingLot(getIdToken(this.getActivity()),1, tempList); //TODO debe tomar el id de usuario loggeado
+        Call<ResponseBody> call = iParkingLotService.editParkingLot(getIdToken(this.getActivity()),
+                1, dataToSend.getId(), dataToSend); //TODO debe tomar el id de usuario loggeado
 
         call.enqueue(new Callback<ResponseBody>() {
             @Override
             public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
                 switch (response.code()) {
-                    case 201:
-                        Toast.makeText(getContext(), "Estacionamiento guardado con éxito", Toast.LENGTH_SHORT).show();
-                        Log.i("TAG","ENTRO POR 201");
-                        cancelParkingLot();
-                        break;
                     case 200:
                         Toast.makeText(getView().getContext(), "Estacionamiento editado con éxito", Toast.LENGTH_SHORT).show();
                         Log.i("TAG","ENTRO POR 200");
@@ -301,7 +205,7 @@ public class AddParkingLotFragment extends Fragment {
             @Override
             public void onFailure(Call<ResponseBody> call, Throwable t) {
                 Log.e("ERRORLOTE",t.getMessage(),t);
-                Toast.makeText(getContext(), "Error al intentar guardar el estacionamiento", Toast.LENGTH_SHORT).show();
+                Toast.makeText(getContext(), "Error al intentar guardar el lote", Toast.LENGTH_SHORT).show();
             }
         });
     }
