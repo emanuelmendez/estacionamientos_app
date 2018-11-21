@@ -8,6 +8,7 @@ import retrofit2.Call;
 import retrofit2.http.Body;
 import retrofit2.http.GET;
 import retrofit2.http.Header;
+import retrofit2.http.PATCH;
 import retrofit2.http.POST;
 import retrofit2.http.Path;
 
@@ -21,4 +22,10 @@ public interface IParkingLotService {
     Call<ResponseBody> addNewParkingLot(@Header("api_token") String token,
                                         @Path("user") long idUser,
                                         @Body List<ParkingLotDTO> jsonData);
+
+    @PATCH("users/{user}/parkinglot/{idParkingLot}")
+    Call<ResponseBody> editParkingLot(@Header("api_token") String token,
+                                   @Path("user") long idUser,
+                                   @Path("idParkingLot") long idParkingLot,
+                                   @Body ParkingLotDTO jsonData);
 }
