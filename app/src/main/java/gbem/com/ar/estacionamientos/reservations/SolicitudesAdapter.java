@@ -1,6 +1,7 @@
 package gbem.com.ar.estacionamientos.reservations;
 
 import android.annotation.SuppressLint;
+import android.content.Context;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -26,10 +27,12 @@ public class SolicitudesAdapter extends RecyclerView.Adapter<SolicitudesAdapter.
     private static final SimpleDateFormat sdf = new SimpleDateFormat("dd/MM HH:mm");
     private List<ReservationDTO> solicitudes;
     private SolicitudListener listener;
+    private final String star;
 
-    public SolicitudesAdapter(List<ReservationDTO> solicitudes, SolicitudListener listener) {
+    public SolicitudesAdapter(List<ReservationDTO> solicitudes, SolicitudListener listener, Context context) {
         this.solicitudes = solicitudes;
         this.listener = listener;
+        this.star = context.getString(R.string.star);
     }
 
     @NonNull
@@ -52,6 +55,11 @@ public class SolicitudesAdapter extends RecyclerView.Adapter<SolicitudesAdapter.
         holder.txtDesde.setText(desde);
         holder.txtHasta.setText(hasta);
         holder.txtStatus.setText(item.getStatus());
+
+        if (item.getReview() != null && item.getReview().getScore() > 0) {
+            String score = item.getReview().getScore() + " " + star;
+            holder.txtScore.setText(score);
+        }
     }
 
     @Override
@@ -92,7 +100,7 @@ public class SolicitudesAdapter extends RecyclerView.Adapter<SolicitudesAdapter.
 
     class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
 
-        TextView txtDriver, txtDesde, txtHasta, txtParkingLot, txtStatus;
+        TextView txtDriver, txtDesde, txtHasta, txtParkingLot, txtStatus, txtScore;
         Button btnConfirmar, btnCancelar;
 
         ViewHolder(View itemView) {
@@ -110,6 +118,7 @@ public class SolicitudesAdapter extends RecyclerView.Adapter<SolicitudesAdapter.
             txtDriver = itemView.findViewById(R.id.txtDriver);
             txtParkingLot = itemView.findViewById(R.id.txtParkingLot);
             txtStatus = itemView.findViewById(R.id.txtStatus);
+            txtScore = itemView.findViewById(R.id.txtScore);
         }
 
         @Override

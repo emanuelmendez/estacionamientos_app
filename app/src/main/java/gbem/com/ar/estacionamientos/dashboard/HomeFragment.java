@@ -56,6 +56,8 @@ public class HomeFragment extends Fragment implements SolicitudListener {
     TextView txtFechaReserva;
     @BindView(R.id.txtUsuarioReserva)
     TextView txtUsuarioReserva;
+    @BindView(R.id.txtStatus)
+    TextView txtStatus;
     @BindView(R.id.btnVerEnMapa)
     Button btnVerEnMapa;
     @BindView(R.id.btnCancelarReserva)
@@ -110,7 +112,7 @@ public class HomeFragment extends Fragment implements SolicitudListener {
         rvSolicitudes.setItemAnimator(new DefaultItemAnimator());
         rvSolicitudes.addItemDecoration(new DividerItemDecoration(getActivity(), LinearLayoutManager.VERTICAL));
 
-        adapter = new SolicitudesAdapter(lenderReservations, this);
+        adapter = new SolicitudesAdapter(lenderReservations, this, getActivity());
         rvSolicitudes.setAdapter(adapter);
 
         if (dashboardService == null)
@@ -259,6 +261,8 @@ public class HomeFragment extends Fragment implements SolicitudListener {
                         cvDriverReservations.setVisibility(VISIBLE);
                         cvNoReservations.setVisibility(GONE);
                     }
+
+                    txtStatus.setText(currentReservation.getStatus().toUpperCase());
 
                     txtReservaEn.setText(
                             getString(R.string.txt_reserva_en, currentReservation.getParkingLot().getStreetAddress()));

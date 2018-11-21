@@ -107,7 +107,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
         final ParkingLotResultDTO parkingLot = markers.get(marker);
 
-        snackbar = Snackbar.make(layout, "Valor por hora: " + parkingLot.getValue(), Snackbar.LENGTH_INDEFINITE);
+        snackbar = Snackbar.make(layout, "Valor por hora: $" + parkingLot.getValue(), Snackbar.LENGTH_INDEFINITE);
         snackbar.setAction("Reservar", v -> postReservation(parkingLot));
         snackbar.show();
 
