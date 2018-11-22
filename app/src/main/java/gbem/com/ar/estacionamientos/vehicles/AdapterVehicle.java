@@ -24,7 +24,6 @@ import java.util.List;
 
 import gbem.com.ar.estacionamientos.R;
 import gbem.com.ar.estacionamientos.api.dtos.VehicleDTO;
-import gbem.com.ar.estacionamientos.api.rest.IVehicleService;
 import gbem.com.ar.estacionamientos.utils.Utils;
 import okhttp3.ResponseBody;
 import retrofit2.Call;
@@ -95,10 +94,10 @@ public class AdapterVehicle extends RecyclerView.Adapter<RecyclerView.ViewHolder
                 //Confirma eliminación
                 alert.setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int which) {
-                        //TODO debe tomar el id de usuario loggeado
+
                         String idVehicle = (v.getTag().toString()).split("_")[1];
                         String rowPosition = (v.getTag().toString()).split("_")[0];
-                        Call<ResponseBody> deleteVehicleRequest = iVehicleService.deleteVehicleById(getIdToken(new Activity()),1,Long.parseLong(idVehicle));
+                        Call<ResponseBody> deleteVehicleRequest = iVehicleService.deleteVehicleById(getIdToken(new Activity()),Long.parseLong(idVehicle));
                         deleteVehicleRequest.enqueue(new Callback<ResponseBody>() {
                             @Override
                             public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {

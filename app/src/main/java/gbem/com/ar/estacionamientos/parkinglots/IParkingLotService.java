@@ -1,4 +1,4 @@
-package gbem.com.ar.estacionamientos.api.rest;
+package gbem.com.ar.estacionamientos.parkinglots;
 
 import java.util.List;
 
@@ -14,18 +14,15 @@ import retrofit2.http.Path;
 
 public interface IParkingLotService {
 
-    @GET("users/{user}/parkinglot")
-    Call<List<ParkingLotDTO>> getParkingLotsByUser(@Header("api_token") String token,
-                                                   @Path("user") long id);
+    @GET("users/parkinglot")
+    Call<List<ParkingLotDTO>> getParkingLotsByUser(@Header("api_token") String token);
 
-    @POST("users/{user}/parkinglot")
+    @POST("users/parkinglot")
     Call<ResponseBody> addNewParkingLot(@Header("api_token") String token,
-                                        @Path("user") long idUser,
                                         @Body List<ParkingLotDTO> jsonData);
 
-    @PATCH("users/{user}/parkinglot/{idParkingLot}")
+    @PATCH("users/parkinglot/{idParkingLot}")
     Call<ResponseBody> editParkingLot(@Header("api_token") String token,
-                                   @Path("user") long idUser,
                                    @Path("idParkingLot") long idParkingLot,
                                    @Body ParkingLotDTO jsonData);
 }
