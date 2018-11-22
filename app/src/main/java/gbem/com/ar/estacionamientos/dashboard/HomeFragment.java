@@ -1,6 +1,9 @@
 package gbem.com.ar.estacionamientos.dashboard;
 
+import android.content.BroadcastReceiver;
+import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.NavigationView;
@@ -75,6 +78,7 @@ public class HomeFragment extends Fragment implements SolicitudListener {
     private Unbinder unbinder;
     private UserDataDTO userData;
     private DashboardService dashboardService;
+    private BroadcastReceiver updateUIReciver;
 
     public HomeFragment() {
         lenderReservationsService = Utils.getService(LenderReservationsService.class);
@@ -121,12 +125,25 @@ public class HomeFragment extends Fragment implements SolicitudListener {
         NotificationService.updateDeviceToken(
                 getIdToken(getActivity()), userData.getDeviceToken());
 
+        IntentFilter filter = new IntentFilter();
+        filter.addAction("gbem.com.ar.estacionamientos.notification");
+
+        updateUIReciver = new BroadcastReceiver() {
+            @Override
+            public void onReceive(Context context, Intent intent) {
+                getDriverCurrentReservation();
+                getLenderReservations();
+            }
+        };
+        getActivity().registerReceiver(updateUIReciver, filter);
+
         return view;
     }
 
     @Override
     public void onDestroyView() {
         super.onDestroyView();
+        Objects.requireNonNull(getActivity()).unregisterReceiver(updateUIReciver);
         unbinder.unbind();
     }
 

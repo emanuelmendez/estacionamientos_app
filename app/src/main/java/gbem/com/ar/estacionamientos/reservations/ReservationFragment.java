@@ -1,6 +1,9 @@
 package gbem.com.ar.estacionamientos.reservations;
 
+import android.content.BroadcastReceiver;
 import android.content.Context;
+import android.content.Intent;
+import android.content.IntentFilter;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
@@ -31,6 +34,7 @@ public class ReservationFragment extends Fragment implements SolicitudListener {
     private final LenderReservationsService service;
     private SolicitudesAdapter adapter;
     private List<ReservationDTO> reservations = new ArrayList<>();
+    private BroadcastReceiver updateUIReciver;
 
     public ReservationFragment() {
         service = Utils.getService(LenderReservationsService.class);
@@ -86,8 +90,25 @@ public class ReservationFragment extends Fragment implements SolicitudListener {
 
             adapter = new SolicitudesAdapter(reservations, this, context);
             recyclerView.setAdapter(adapter);
+
+            IntentFilter filter = new IntentFilter();
+            filter.addAction("gbem.com.ar.estacionamientos.notification");
+
+            updateUIReciver = new BroadcastReceiver() {
+                @Override
+                public void onReceive(Context context, Intent intent) {
+                    getLenderReservations();
+                }
+            };
+            Objects.requireNonNull(getActivity()).registerReceiver(updateUIReciver, filter);
         }
         return view;
+    }
+
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        Objects.requireNonNull(getActivity()).unregisterReceiver(updateUIReciver);
     }
 
     @Override

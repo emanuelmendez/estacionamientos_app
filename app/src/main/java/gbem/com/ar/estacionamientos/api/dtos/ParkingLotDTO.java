@@ -11,6 +11,7 @@ public class ParkingLotDTO implements Serializable {
     private String description;
     private boolean active;
     private long value;
+    private ScheduleDTO scheduleDTO;
 
     public long getId() {
         return id;
@@ -44,6 +45,8 @@ public class ParkingLotDTO implements Serializable {
     }
     public long getValue() { return value; }
     public void setValue(long value) { this.value = value; }
+    public ScheduleDTO getScheduleDTO() { return scheduleDTO; }
+    public void setScheduleDTO(ScheduleDTO scheduleDTO) { this.scheduleDTO = scheduleDTO; }
 
     @Override
     public int hashCode() {
@@ -93,7 +96,7 @@ public class ParkingLotDTO implements Serializable {
 
     @Override
     public String toString() {
-        return "ParkingLotDTO [id=" + id + ", address=" + addressDTO
+        return "ParkingLotDTO [id=" + id + ", address=" + addressDTO + ", scheduleDTO=" + scheduleDTO
                 + ", lotNumber=" + lotNumber + ", rate=" + value + ", description=" + description + "]";
     }
 }

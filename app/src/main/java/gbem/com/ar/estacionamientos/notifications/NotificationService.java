@@ -1,6 +1,8 @@
 package gbem.com.ar.estacionamientos.notifications;
 
+import android.app.PendingIntent;
 import android.content.Context;
+import android.content.Intent;
 import android.support.annotation.NonNull;
 import android.support.v4.app.NotificationCompat;
 import android.support.v4.app.NotificationManagerCompat;
@@ -11,6 +13,7 @@ import com.google.firebase.messaging.FirebaseMessagingService;
 import com.google.firebase.messaging.RemoteMessage;
 
 import gbem.com.ar.estacionamientos.EstacionamientosApp;
+import gbem.com.ar.estacionamientos.IpConfigActivity;
 import gbem.com.ar.estacionamientos.R;
 import gbem.com.ar.estacionamientos.signin.ISessionService;
 import gbem.com.ar.estacionamientos.utils.Utils;
@@ -55,7 +58,14 @@ public class NotificationService extends FirebaseMessagingService {
         else {
             Log.d(TAG, "onMessageReceived: " + remoteMessage.getNotification().getBody());
             showNotification(remoteMessage.getNotification());
+            updateUIIfVisible();
         }
+    }
+
+    private void updateUIIfVisible() {
+        Intent local = new Intent();
+        local.setAction("gbem.com.ar.estacionamientos.notification");
+        this.sendBroadcast(local);
     }
 
     private void showNotification(RemoteMessage.Notification notification) {
@@ -67,6 +77,13 @@ public class NotificationService extends FirebaseMessagingService {
                         .setPriority(NotificationCompat.PRIORITY_HIGH);
 
         NotificationManagerCompat manager = NotificationManagerCompat.from(this);
+
+        PendingIntent contentIntent = PendingIntent.getActivity(this, 0,
+                new Intent(this, IpConfigActivity.class), PendingIntent.FLAG_UPDATE_CURRENT);
+        builder.setAutoCancel(true);
+        builder.setContentIntent(contentIntent);
+
+
         manager.notify(1, builder.build());
     }
 

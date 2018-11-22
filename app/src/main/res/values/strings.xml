@@ -62,11 +62,11 @@
     <string name="btn_edit_lot">Editar lote</string>
     <string name="btn_edit_schedule">Editar horarios</string>
     <string name="error_no_lot">¡Tenés que ingresar al menos un lote!</string>
-    <string name="lbl_addres">Dirección</string>
+    <string name="lbl_address">Dirección</string>
     <string name="no_schedule_set">No hay horarios guardados para éste lote</string>
     <string name="monday">L</string>
-    <string name="tuesday">M</string>
-    <string name="wednesday">M</string>
+    <string name="tuesday">Ma</string>
+    <string name="wednesday">Mi</string>
     <string name="thursday">J</string>
     <string name="friday">V</string>
     <string name="saturday">S</string>
@@ -74,4 +74,7 @@
     <string name="lbl_time_from">Hora de inicio</string>
     <string name="lbl_time_to">Hora de fin</string>
     <string name="star">&#9733;</string>
+    <string name="error_no_day_selected">Tenés que seleccionar al menos un día</string>
+    <string name="edit_lot_title">Editar lote</string>
+    <string name="add_new_lot">Agregar lote</string>
 </resources>
