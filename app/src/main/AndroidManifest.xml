@@ -54,7 +54,7 @@
         </service>
 
         <activity android:name=".signin.LoginActivity" />
-        <activity android:name=".history.ReviewActivity"></activity>
+        <activity android:name=".history.ReviewActivity" />
     </application>
 
 </manifest>
