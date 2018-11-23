@@ -18,6 +18,7 @@ import android.widget.TextView;
 
 import gbem.com.ar.estacionamientos.R;
 import gbem.com.ar.estacionamientos.api.dtos.UserDataDTO;
+import gbem.com.ar.estacionamientos.history.ReservationHistoryFragment;
 import gbem.com.ar.estacionamientos.parkinglots.ParkingLotFragment;
 import gbem.com.ar.estacionamientos.reservations.ReservationFragment;
 import gbem.com.ar.estacionamientos.search.SearchFragment;
@@ -107,6 +108,9 @@ public class NavigationDrawerActivity extends AppCompatActivity
                 break;
             case R.id.nav_parking_admin:
                 fragment = new ParkingLotFragment();
+                break;
+            case R.id.nav_record:
+                fragment = new ReservationHistoryFragment();
                 break;
             default:
                 fragment = HomeFragment.newInstance(userData);
