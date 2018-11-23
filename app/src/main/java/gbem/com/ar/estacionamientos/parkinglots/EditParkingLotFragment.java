@@ -21,10 +21,8 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 import gbem.com.ar.estacionamientos.R;
-import gbem.com.ar.estacionamientos.api.dtos.AddressDTO;
 import gbem.com.ar.estacionamientos.api.dtos.ParkingLotDTO;
 import gbem.com.ar.estacionamientos.api.dtos.ScheduleDTO;
-import gbem.com.ar.estacionamientos.api.rest.IParkingLotService;
 import gbem.com.ar.estacionamientos.utils.Utils;
 import okhttp3.ResponseBody;
 import retrofit2.Call;
@@ -182,7 +180,7 @@ public class EditParkingLotFragment extends Fragment {
         }
 
         Call<ResponseBody> call = iParkingLotService.editParkingLot(getIdToken(this.getActivity()),
-                1, dataToSend.getId(), dataToSend); //TODO debe tomar el id de usuario loggeado
+                dataToSend.getId(), dataToSend);
 
         call.enqueue(new Callback<ResponseBody>() {
             @Override

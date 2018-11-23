@@ -34,7 +34,6 @@ import gbem.com.ar.estacionamientos.R;
 import gbem.com.ar.estacionamientos.api.dtos.AddressDTO;
 import gbem.com.ar.estacionamientos.api.dtos.ParkingLotDTO;
 import gbem.com.ar.estacionamientos.api.dtos.ScheduleDTO;
-import gbem.com.ar.estacionamientos.api.rest.IParkingLotService;
 import gbem.com.ar.estacionamientos.utils.Utils;
 import okhttp3.ResponseBody;
 import retrofit2.Call;
@@ -273,7 +272,7 @@ public class AddParkingLotFragment extends Fragment {
             iParkingLotService = Utils.getService(IParkingLotService.class);
         }
 
-        Call<ResponseBody> call = iParkingLotService.addNewParkingLot(getIdToken(this.getActivity()),1, tempList); //TODO debe tomar el id de usuario loggeado
+        Call<ResponseBody> call = iParkingLotService.addNewParkingLot(getIdToken(this.getActivity()),tempList);
 
         call.enqueue(new Callback<ResponseBody>() {
             @Override

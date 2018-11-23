@@ -17,7 +17,6 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import gbem.com.ar.estacionamientos.R;
 import gbem.com.ar.estacionamientos.api.dtos.VehicleDTO;
-import gbem.com.ar.estacionamientos.api.rest.IVehicleService;
 import gbem.com.ar.estacionamientos.utils.Utils;
 import okhttp3.ResponseBody;
 import retrofit2.Call;
@@ -96,9 +95,9 @@ public class VehicleDialogFragment extends AppCompatDialogFragment {
                 jsonData.setColor(spinnerColor.getSelectedItem().toString());
 
                 if(vehicleId == 0){
-                    saveNewVehicle = iVehicleService.saveNewVehicle(getIdToken(getActivity()),1,jsonData);//TODO reemplazar con id de usuario loggeado
+                    saveNewVehicle = iVehicleService.saveNewVehicle(getIdToken(getActivity()),jsonData);
                 }else{
-                    saveNewVehicle = iVehicleService.editVehicle(getIdToken(getActivity()),1,vehicleId,jsonData);//TODO reemplazar con id de usuario loggeado
+                    saveNewVehicle = iVehicleService.editVehicle(getIdToken(getActivity()),vehicleId,jsonData);
                 }
                 saveNewVehicle.enqueue(new Callback<ResponseBody>() {
                     @Override

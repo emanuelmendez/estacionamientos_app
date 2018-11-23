@@ -24,7 +24,7 @@ import butterknife.ButterKnife;
 import gbem.com.ar.estacionamientos.R;
 import gbem.com.ar.estacionamientos.api.dtos.AddressDTO;
 import gbem.com.ar.estacionamientos.api.dtos.ParkingLotDTO;
-import gbem.com.ar.estacionamientos.api.rest.IParkingLotService;
+import gbem.com.ar.estacionamientos.api.dtos.UserDataDTO;
 import gbem.com.ar.estacionamientos.utils.Utils;
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -39,6 +39,7 @@ public class ParkingLotFragment extends Fragment {
     private IParkingLotService iParkingLotService;
     List<ParkingLotDTO> lotList = new ArrayList<>();
     AddressDTO currentAddress = new AddressDTO();
+    private UserDataDTO userData;
 
     @BindView(R.id.lbl_full_address)
     TextView fullAddress;
@@ -57,6 +58,7 @@ public class ParkingLotFragment extends Fragment {
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_parking_lot, container, false);
         ButterKnife.bind(this,view);
+
         return view;
     }
 
@@ -93,7 +95,7 @@ public class ParkingLotFragment extends Fragment {
             iParkingLotService = Utils.getService(IParkingLotService.class);
         }
 
-        Call<List<ParkingLotDTO>> call = iParkingLotService.getParkingLotsByUser(getIdToken(this.getActivity()),1); //TODO debe tomar el id de usuario loggeado
+        Call<List<ParkingLotDTO>> call = iParkingLotService.getParkingLotsByUser(getIdToken(this.getActivity()));
 
         call.enqueue(new Callback<List<ParkingLotDTO>>() {
             @Override

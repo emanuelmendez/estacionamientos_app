@@ -1,7 +1,6 @@
 package gbem.com.ar.estacionamientos.parkinglots;
 
 
-import android.location.Address;
 import android.os.Bundle;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
@@ -18,10 +17,8 @@ import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -30,7 +27,6 @@ import gbem.com.ar.estacionamientos.R;
 import gbem.com.ar.estacionamientos.api.dtos.AddressDTO;
 import gbem.com.ar.estacionamientos.api.dtos.ParkingLotDTO;
 import gbem.com.ar.estacionamientos.api.dtos.ScheduleDTO;
-import gbem.com.ar.estacionamientos.api.rest.IParkingLotService;
 import gbem.com.ar.estacionamientos.utils.Utils;
 import okhttp3.ResponseBody;
 import retrofit2.Call;
@@ -162,7 +158,7 @@ public class AddNewLotFragment extends Fragment {
             iParkingLotService = Utils.getService(IParkingLotService.class);
         }
 
-        Call<ResponseBody> call = iParkingLotService.addNewParkingLot(getIdToken(this.getActivity()),1, tempList); //TODO debe tomar el id de usuario loggeado
+        Call<ResponseBody> call = iParkingLotService.addNewParkingLot(getIdToken(this.getActivity()),tempList);
 
         call.enqueue(new Callback<ResponseBody>() {
             @Override
