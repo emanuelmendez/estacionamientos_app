@@ -1,4 +1,4 @@
-package gbem.com.ar.estacionamientos.api.rest;
+package gbem.com.ar.estacionamientos.vehicles;
 
 import java.util.List;
 
@@ -15,23 +15,19 @@ import retrofit2.http.Path;
 
 public interface IVehicleService {
 
-    @GET("users/{user}/vehicles")
-    Call<List<VehicleDTO>> getVehicleByUserId(@Header("api_token") String token,
-                                              @Path("user") long id);
+    @GET("users/vehicles")
+    Call<List<VehicleDTO>> getVehicleByUser(@Header("api_token") String token);
 
-    @DELETE("users/{user}/vehicles/{idVehicle}")
+    @DELETE("users/vehicles/{idVehicle}")
     Call<ResponseBody> deleteVehicleById(@Header("api_token") String token,
-                                         @Path("user") long idUser,
                                          @Path("idVehicle") long idVehicle);
 
-    @POST("users/{user}/vehicles")
+    @POST("users/vehicles")
     Call<ResponseBody> saveNewVehicle(@Header("api_token") String token,
-                                      @Path("user") long idUser,
                                       @Body VehicleDTO jsonData);
 
-    @PATCH("users/{user}/vehicles/{idVehicle}")
+    @PATCH("users/vehicles/{idVehicle}")
     Call<ResponseBody> editVehicle(@Header("api_token") String token,
-                                   @Path("user") long idUser,
                                    @Path("idVehicle") long idVehicle,
                                    @Body VehicleDTO jsonData);
 }

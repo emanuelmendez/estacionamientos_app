@@ -19,7 +19,6 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import gbem.com.ar.estacionamientos.R;
 import gbem.com.ar.estacionamientos.api.dtos.VehicleDTO;
-import gbem.com.ar.estacionamientos.api.rest.IVehicleService;
 import gbem.com.ar.estacionamientos.utils.Utils;
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -74,13 +73,14 @@ public class VehicleFragment extends Fragment implements IDialogDismissListener{
             iVehicleService = Utils.getService(IVehicleService.class);
         }
 
-        Call<List<VehicleDTO>> call = iVehicleService.getVehicleByUserId(getIdToken(this.getActivity()),1); //TODO debe tomar el id de usuario loggeado
-
+        Call<List<VehicleDTO>> call = iVehicleService.getVehicleByUser(getIdToken(this.getActivity()));
+        
         call.enqueue(new Callback<List<VehicleDTO>>() {
             @Override
             public void onResponse(Call<List<VehicleDTO>> call, Response<List<VehicleDTO>> response) {
                 switch (response.code()) {
                     case 200:
+
                         generateDataList(response.body());
                         break;
                     case 401:
