@@ -117,6 +117,7 @@ public class ReservationDTO implements Serializable {
                 ", to=" + to +
                 ", value=" + value +
                 ", status='" + status + '\'' +
+                ", review='" + review + "\'" +
                 '}';
     }
 

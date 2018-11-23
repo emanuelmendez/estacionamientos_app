@@ -1,6 +1,10 @@
 package gbem.com.ar.estacionamientos.history;
 
 
+import android.content.BroadcastReceiver;
+import android.content.Context;
+import android.content.Intent;
+import android.content.IntentFilter;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
@@ -14,6 +18,7 @@ import android.view.ViewGroup;
 import android.widget.Toast;
 
 import java.util.List;
+import java.util.Objects;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -25,6 +30,7 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
+import static android.app.Activity.RESULT_OK;
 import static android.view.View.GONE;
 import static android.view.View.VISIBLE;
 import static gbem.com.ar.estacionamientos.utils.Utils.getIdToken;
@@ -38,6 +44,7 @@ public class ReservationHistoryFragment extends Fragment implements OnReviewClic
     private AdapterReservationHistory mAdapter;
     private List<ReservationDTO> reservations;
     private Unbinder unbinder;
+    private BroadcastReceiver updateUIReciver;
 
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
@@ -46,6 +53,17 @@ public class ReservationHistoryFragment extends Fragment implements OnReviewClic
         View view = inflater.inflate(R.layout.fragment_reservation_history, container, false);
         unbinder = ButterKnife.bind(this, view);
 
+        IntentFilter filter = new IntentFilter();
+        filter.addAction("gbem.com.ar.estacionamientos.notification");
+
+        updateUIReciver = new BroadcastReceiver() {
+            @Override
+            public void onReceive(Context context, Intent intent) {
+                getReservationsHistory();
+            }
+        };
+        Objects.requireNonNull(getActivity()).registerReceiver(updateUIReciver, filter);
+
         return view;
     }
 
@@ -53,16 +71,17 @@ public class ReservationHistoryFragment extends Fragment implements OnReviewClic
     public void onViewCreated(@NonNull View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        getParkingLotJson();
+        getReservationsHistory();
     }
 
     @Override
     public void onDestroyView() {
         super.onDestroyView();
         unbinder.unbind();
+        Objects.requireNonNull(getActivity()).unregisterReceiver(updateUIReciver);
     }
 
-    public void getParkingLotJson() {
+    public void getReservationsHistory() {
 
         if (iReservationHistoryService == null) {
             iReservationHistoryService = Utils.getService(IReservationHistoryService.class);
@@ -105,10 +124,9 @@ public class ReservationHistoryFragment extends Fragment implements OnReviewClic
 
         try {
             mRVAddLotsList = getView().findViewById(R.id.reservationRecordList);
-            mAdapter = new AdapterReservationHistory(result, this);
+            mAdapter = new AdapterReservationHistory(result, this, Objects.requireNonNull(getActivity()));
             mRVAddLotsList.setAdapter(mAdapter);
             mRVAddLotsList.setLayoutManager(new LinearLayoutManager(getContext()));
-
         } catch (Exception e) {
             Toast.makeText(getActivity(), e.toString(), Toast.LENGTH_LONG).show();
         }
@@ -116,6 +134,25 @@ public class ReservationHistoryFragment extends Fragment implements OnReviewClic
 
     @Override
     public void onReviewButtonClicked(ReservationDTO item) {
+        if (getActivity() == null) return;
 
+        Intent intent = new Intent(getActivity(), ReviewActivity.class);
+        intent.putExtra("reservation", item);
+        startActivityForResult(intent, 532);
     }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (requestCode == 532 && resultCode == RESULT_OK && data.getExtras() != null) {
+            mAdapter.update((ReservationDTO) data.getExtras().get("reservation"));
+        }
+    }
+
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        getReservationsHistory();
+    }
+
 }

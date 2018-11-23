@@ -44,4 +44,13 @@ public class ReviewDTO implements Serializable {
         this.dateReviewed = dateReviewed;
     }
 
+    @Override
+    public String toString() {
+        return "ReviewDTO{" +
+                "id=" + id +
+                ", score=" + score +
+                ", comment='" + comment + '\'' +
+                ", dateReviewed=" + dateReviewed +
+                '}';
+    }
 }

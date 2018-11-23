@@ -1,6 +1,7 @@
 package gbem.com.ar.estacionamientos.history;
 
 import android.annotation.SuppressLint;
+import android.content.Context;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
@@ -20,14 +21,14 @@ public class AdapterReservationHistory extends RecyclerView.Adapter<RecyclerView
 
     @SuppressLint("SimpleDateFormat")
     private static final SimpleDateFormat sdf = new SimpleDateFormat("dd/MM HH:mm");
-
+    private final String star;
     private List<ReservationDTO> reservations;
     private OnReviewClickListener listener;
 
-
-    AdapterReservationHistory(List<ReservationDTO> data, OnReviewClickListener listener) {
+    AdapterReservationHistory(List<ReservationDTO> data, OnReviewClickListener listener, Context context) {
         this.reservations = data;
         this.listener = listener;
+        this.star = context.getString(R.string.star);
     }
 
     // Inflate the layout when viewholder created
@@ -41,6 +42,7 @@ public class AdapterReservationHistory extends RecyclerView.Adapter<RecyclerView
         return new MyHolder(view);
     }
 
+    @SuppressLint("DefaultLocale")
     @Override
     public void onBindViewHolder(@NonNull RecyclerView.ViewHolder holder, int position) {
 
@@ -54,10 +56,15 @@ public class AdapterReservationHistory extends RecyclerView.Adapter<RecyclerView
         myholder.textFrom.setText(desde);
         myholder.textTo.setText(hasta);
         myholder.btnReview.setTag(item.getId());
-        myholder.btnReview.setOnClickListener(v -> {
-            listener.onReviewButtonClicked(item);
-        });
+        myholder.btnReview.setOnClickListener(v -> listener.onReviewButtonClicked(item));
 
+        if (item.getReview() != null) {
+            myholder.txtScore.setText(String
+                    .format("%0" + item.getReview().getScore() + "d", 0)
+                    .replace("0", star)
+            );
+            myholder.txtComment.setText(item.getReview().getComment());
+        }
     }
 
     @Override
@@ -67,16 +74,29 @@ public class AdapterReservationHistory extends RecyclerView.Adapter<RecyclerView
         return 0;
     }
 
+    void update(ReservationDTO item) {
+        if (reservations == null) return;
+
+        for (ReservationDTO r : reservations) {
+            if (r.getId() == item.getId()) {
+                r.setReview(item.getReview());
+            }
+        }
+
+        notifyDataSetChanged();
+    }
+
     class MyHolder extends RecyclerView.ViewHolder {
 
         TextView textLender;
         TextView textLotDesc;
         TextView textFrom;
         TextView textTo;
+        TextView txtScore;
+        TextView txtComment;
         Button btnReview;
         CardView cv;
 
-        // create constructor to get widget reference
         MyHolder(View itemView) {
             super(itemView);
             cv = itemView.findViewById(R.id.cv);
@@ -84,6 +104,8 @@ public class AdapterReservationHistory extends RecyclerView.Adapter<RecyclerView
             textLotDesc = itemView.findViewById(R.id.txt_parkinglot);
             textFrom = itemView.findViewById(R.id.txt_from);
             textTo = itemView.findViewById(R.id.txt_to);
+            txtScore = itemView.findViewById(R.id.txtScore);
+            txtComment = itemView.findViewById(R.id.txtComment);
             btnReview = itemView.findViewById(R.id.btn_review);
         }
     }
