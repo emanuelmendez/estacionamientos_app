@@ -130,7 +130,7 @@ public class ParkingLotFragment extends Fragment {
 
         try {
             mRVAddLotsList = getView().findViewById(R.id.parkingLotList);
-            mAdapter = new AdapterParkingLot(getContext(), result);
+            mAdapter = new AdapterParkingLot(getContext(), result, getActivity());
             mRVAddLotsList.setAdapter(mAdapter);
             mRVAddLotsList.setLayoutManager(new LinearLayoutManager(getContext()));
 
