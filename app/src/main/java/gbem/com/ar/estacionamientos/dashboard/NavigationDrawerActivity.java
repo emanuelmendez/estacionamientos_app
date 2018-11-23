@@ -20,6 +20,7 @@ import gbem.com.ar.estacionamientos.R;
 import gbem.com.ar.estacionamientos.api.dtos.UserDataDTO;
 import gbem.com.ar.estacionamientos.history.ReservationHistoryFragment;
 import gbem.com.ar.estacionamientos.parkinglots.ParkingLotFragment;
+import gbem.com.ar.estacionamientos.reputation.ReputationFragment;
 import gbem.com.ar.estacionamientos.reservations.ReservationFragment;
 import gbem.com.ar.estacionamientos.search.SearchFragment;
 import gbem.com.ar.estacionamientos.vehicles.VehicleFragment;
@@ -111,6 +112,9 @@ public class NavigationDrawerActivity extends AppCompatActivity
                 break;
             case R.id.nav_record:
                 fragment = new ReservationHistoryFragment();
+                break;
+            case R.id.nav_lender_rep:
+                fragment = new ReputationFragment();
                 break;
             default:
                 fragment = HomeFragment.newInstance(userData);

@@ -81,4 +81,6 @@
     <string name="btn_review">Calificar</string>
     <string name="title_reservation_history">Historial de reservas</string>
     <string name="rate_placeholder">$ %.2f</string>
+    <string name="no_data">Sin datos</string>
+    <string name="puntaje_de_prestador">Puntaje de prestador</string>
 </resources>
