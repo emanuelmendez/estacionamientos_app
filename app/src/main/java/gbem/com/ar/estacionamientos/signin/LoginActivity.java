@@ -64,14 +64,20 @@ public class LoginActivity extends AppCompatActivity {
     }
 
     private void getDeviceToken() {
-        Log.i(TAG, "getDeviceToken: " + NotificationService.getToken(this));
-        if (NotificationService.getToken(this) == null) {
+        final String token = NotificationService.getToken(this);
+        Log.i(TAG, "getDeviceToken: " + token);
+        if (token == null) {
             final Task<InstanceIdResult> task = FirebaseInstanceId.getInstance().getInstanceId();
             task.addOnSuccessListener(result ->
                     getSharedPreferences("_", MODE_PRIVATE)
                             .edit()
                             .putString("fb", result.getToken())
                             .apply());
+        } else {
+            getSharedPreferences("_", MODE_PRIVATE)
+                    .edit()
+                    .putString("fb", token)
+                    .apply();
         }
     }
 
