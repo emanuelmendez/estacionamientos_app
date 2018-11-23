@@ -78,4 +78,6 @@
     <string name="edit_lot_title">Editar lote</string>
     <string name="add_new_lot">Agregar lote</string>
     <string name="delete_lot">Eliminar lote</string>
+    <string name="btn_review">Calificar</string>
+    <string name="title_reservation_history">Historial de reservas</string>
 </resources>
