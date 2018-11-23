@@ -61,6 +61,8 @@ public class HomeFragment extends Fragment implements SolicitudListener {
     TextView txtUsuarioReserva;
     @BindView(R.id.txtStatus)
     TextView txtStatus;
+    @BindView(R.id.txtRate)
+    TextView txtRate;
     @BindView(R.id.btnVerEnMapa)
     Button btnVerEnMapa;
     @BindView(R.id.btnCancelarReserva)
@@ -280,6 +282,7 @@ public class HomeFragment extends Fragment implements SolicitudListener {
                     }
 
                     txtStatus.setText(currentReservation.getStatus().toUpperCase());
+                    txtRate.setText(getString(R.string.rate_placeholder, currentReservation.getValue()));
 
                     txtReservaEn.setText(
                             getString(R.string.txt_reserva_en, currentReservation.getParkingLot().getStreetAddress()));

@@ -80,4 +80,5 @@
     <string name="delete_lot">Eliminar lote</string>
     <string name="btn_review">Calificar</string>
     <string name="title_reservation_history">Historial de reservas</string>
+    <string name="rate_placeholder">$ %.2f</string>
 </resources>
