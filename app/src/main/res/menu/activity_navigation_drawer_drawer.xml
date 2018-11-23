@@ -17,10 +17,10 @@
             android:id="@+id/nav_vehicle_admin"
             android:icon="@drawable/ic_car_admin"
             android:title="Administrar vehículos" />
-        <item
-            android:id="@+id/nav_add_credit"
-            android:icon="@drawable/ic_credit_card"
-            android:title="Agregar crédito" />
+        <!--<item-->
+            <!--android:id="@+id/nav_add_credit"-->
+            <!--android:icon="@drawable/ic_credit_card"-->
+            <!--android:title="Agregar crédito" />-->
         <item
             android:id="@+id/nav_record"
             android:icon="@drawable/ic_user_record"
@@ -43,17 +43,17 @@
                 android:title="Ver reputación" />
         </menu>
     </item>
-    <item android:title="">
-        <menu>
-            <item
-                android:id="@+id/nav_profile_edit"
-                android:icon="@drawable/ic_edit"
-                android:title="Editar perfil"/>
-            <item
-                android:id="@+id/nav_logout"
-                android:icon="@drawable/ic_logout"
-                android:title="Cerrar sesión"/>
-        </menu>
-    </item>
+    <!--<item android:title="">-->
+        <!--<menu>-->
+            <!--<item-->
+                <!--android:id="@+id/nav_profile_edit"-->
+                <!--android:icon="@drawable/ic_edit"-->
+                <!--android:title="Editar perfil"/>-->
+            <!--<item-->
+                <!--android:id="@+id/nav_logout"-->
+                <!--android:icon="@drawable/ic_logout"-->
+                <!--android:title="Cerrar sesión"/>-->
+        <!--</menu>-->
+    <!--</item>-->
 
 </menu>
