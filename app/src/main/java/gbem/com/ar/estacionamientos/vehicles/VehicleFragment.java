@@ -116,7 +116,7 @@ public class VehicleFragment extends Fragment implements IDialogDismissListener{
             }
 
             mRVVehicleList = getView().findViewById(R.id.vehicleList);
-            mAdapter = new AdapterVehicle(getActivity(), data);
+            mAdapter = new AdapterVehicle(getActivity(), getActivity(), data);
             mRVVehicleList.setAdapter(mAdapter);
             mRVVehicleList.setLayoutManager(new LinearLayoutManager(getActivity()));
 
@@ -128,11 +128,6 @@ public class VehicleFragment extends Fragment implements IDialogDismissListener{
     @Override
     public void onDismissClick() {
         final Handler handler = new Handler();
-        handler.postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                getVehicleJson();
-            }
-        }, 500);
+        handler.postDelayed(this::getVehicleJson, 500);
     }
 }

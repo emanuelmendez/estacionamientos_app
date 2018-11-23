@@ -1,8 +1,8 @@
 package gbem.com.ar.estacionamientos.history;
 
 import android.annotation.SuppressLint;
-import android.app.Activity;
 import android.content.Context;
+import android.support.annotation.NonNull;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -14,8 +14,6 @@ import android.widget.TextView;
 import java.text.SimpleDateFormat;
 import java.util.List;
 
-import butterknife.BindView;
-import butterknife.ButterKnife;
 import gbem.com.ar.estacionamientos.R;
 import gbem.com.ar.estacionamientos.dashboard.ReservationDTO;
 
@@ -23,39 +21,32 @@ public class AdapterReservationHistory extends RecyclerView.Adapter<RecyclerView
 
     @SuppressLint("SimpleDateFormat")
     private static final SimpleDateFormat sdf = new SimpleDateFormat("dd/MM HH:mm");
-    private Context context;
-    private LayoutInflater inflater;
+    private final String star;
     private List<ReservationDTO> reservations;
-    private Activity activity;
+    private OnReviewClickListener listener;
 
-    @BindView(R.id.btn_review)
-    Button btnReview;
-
-    public AdapterReservationHistory(Context context, List<ReservationDTO> data, Activity activity){
-        this.context = context;
-        inflater = LayoutInflater.from(context);
-        this.reservations=data;
-        this.activity = activity;
+    AdapterReservationHistory(List<ReservationDTO> data, OnReviewClickListener listener, Context context) {
+        this.reservations = data;
+        this.listener = listener;
+        this.star = context.getString(R.string.star);
     }
 
     // Inflate the layout when viewholder created
+    @NonNull
     @Override
-    public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        View view = inflater.inflate(R.layout.container_reservation_history, parent, false);
-        MyHolder holder = new MyHolder(view);
-        ButterKnife.bind(this,view);
+    public RecyclerView.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+        View view = LayoutInflater
+                .from(parent.getContext())
+                .inflate(R.layout.container_reservation_history, parent, false);
 
-        btnReview.setOnClickListener(v -> {
-            //TODO calificar
-        });
-
-        return holder;
+        return new MyHolder(view);
     }
 
+    @SuppressLint("DefaultLocale")
     @Override
-    public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
+    public void onBindViewHolder(@NonNull RecyclerView.ViewHolder holder, int position) {
 
-        AdapterReservationHistory.MyHolder myholder= (AdapterReservationHistory.MyHolder) holder;
+        AdapterReservationHistory.MyHolder myholder = (AdapterReservationHistory.MyHolder) holder;
         ReservationDTO item = reservations.get(position);
         myholder.textLender.setText(item.getLenderName());
         myholder.textLotDesc.setText(item.getParkingLot().getDescription());
@@ -65,27 +56,14 @@ public class AdapterReservationHistory extends RecyclerView.Adapter<RecyclerView
         myholder.textFrom.setText(desde);
         myholder.textTo.setText(hasta);
         myholder.btnReview.setTag(item.getId());
+        myholder.btnReview.setOnClickListener(v -> listener.onReviewButtonClicked(item));
 
-    }
-
-    class MyHolder extends RecyclerView.ViewHolder {
-
-        TextView textLender;
-        TextView textLotDesc;
-        TextView textFrom;
-        TextView textTo;
-        Button btnReview;
-        CardView cv;
-
-        // create constructor to get widget reference
-        public MyHolder(View itemView) {
-            super(itemView);
-            cv = (CardView)itemView.findViewById(R.id.cv);
-            textLender = (TextView) itemView.findViewById(R.id.txt_lender);
-            textLotDesc = (TextView) itemView.findViewById(R.id.txt_parkinglot);
-            textFrom = (TextView) itemView.findViewById(R.id.txt_from);
-            textTo = (TextView) itemView.findViewById(R.id.txt_to);
-            btnReview = (Button) itemView.findViewById(R.id.btn_review);
+        if (item.getReview() != null) {
+            myholder.txtScore.setText(String
+                    .format("%0" + item.getReview().getScore() + "d", 0)
+                    .replace("0", star)
+            );
+            myholder.txtComment.setText(item.getReview().getComment());
         }
     }
 
@@ -94,5 +72,41 @@ public class AdapterReservationHistory extends RecyclerView.Adapter<RecyclerView
         if (reservations != null)
             return reservations.size();
         return 0;
+    }
+
+    void update(ReservationDTO item) {
+        if (reservations == null) return;
+
+        for (ReservationDTO r : reservations) {
+            if (r.getId() == item.getId()) {
+                r.setReview(item.getReview());
+            }
+        }
+
+        notifyDataSetChanged();
+    }
+
+    class MyHolder extends RecyclerView.ViewHolder {
+
+        TextView textLender;
+        TextView textLotDesc;
+        TextView textFrom;
+        TextView textTo;
+        TextView txtScore;
+        TextView txtComment;
+        Button btnReview;
+        CardView cv;
+
+        MyHolder(View itemView) {
+            super(itemView);
+            cv = itemView.findViewById(R.id.cv);
+            textLender = itemView.findViewById(R.id.txt_lender);
+            textLotDesc = itemView.findViewById(R.id.txt_parkinglot);
+            textFrom = itemView.findViewById(R.id.txt_from);
+            textTo = itemView.findViewById(R.id.txt_to);
+            txtScore = itemView.findViewById(R.id.txtScore);
+            txtComment = itemView.findViewById(R.id.txtComment);
+            btnReview = itemView.findViewById(R.id.btn_review);
+        }
     }
 }

@@ -1,9 +1,13 @@
-package gbem.com.ar.estacionamientos.dashboard;
+package gbem.com.ar.estacionamientos.history;
 
 import java.io.Serializable;
 import java.util.Date;
 
-public class ReviewDTO implements Serializable {
+/**
+ * @author pielreloj
+ * Created: 23/11/18.
+ */
+final class ReviewDTO implements Serializable {
 
     private static final long serialVersionUID = 3683909515846673760L;
 
@@ -42,15 +46,5 @@ public class ReviewDTO implements Serializable {
 
     public void setDateReviewed(Date dateReviewed) {
         this.dateReviewed = dateReviewed;
-    }
-
-    @Override
-    public String toString() {
-        return "ReviewDTO{" +
-                "id=" + id +
-                ", score=" + score +
-                ", comment='" + comment + '\'' +
-                ", dateReviewed=" + dateReviewed +
-                '}';
     }
 }
