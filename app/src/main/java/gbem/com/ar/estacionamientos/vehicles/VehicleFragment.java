@@ -74,7 +74,7 @@ public class VehicleFragment extends Fragment implements IDialogDismissListener{
         }
 
         Call<List<VehicleDTO>> call = iVehicleService.getVehicleByUser(getIdToken(this.getActivity()));
-        
+
         call.enqueue(new Callback<List<VehicleDTO>>() {
             @Override
             public void onResponse(Call<List<VehicleDTO>> call, Response<List<VehicleDTO>> response) {

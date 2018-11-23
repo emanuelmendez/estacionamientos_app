@@ -64,7 +64,21 @@
                 android:layout_marginBottom="8dp"
                 android:gravity="fill_vertical|end"
                 android:text="@string/btn_edit_lot"
-                android:textColor="@color/colorGreen" />
+                android:textColor="@color/colorGreen"/>
+
+            <Button
+                android:id="@+id/btn_delete_lot"
+                style="@style/Widget.AppCompat.Button.Borderless.Colored"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/txt_lot_description"
+                android:layout_toEndOf="@+id/btn_edit_lot"
+                android:layout_marginStart="8dp"
+                android:layout_marginTop="8dp"
+                android:layout_marginBottom="8dp"
+                android:gravity="fill_vertical|end"
+                android:text="@string/delete_lot"
+                android:textColor="@color/colorAccent" />
 
         </RelativeLayout>
 

@@ -102,6 +102,7 @@ public class AdapterVehicle extends RecyclerView.Adapter<RecyclerView.ViewHolder
                             @Override
                             public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
                                 switch (response.code()) {
+                                    case 204:
                                     case 200:
                                         data.remove(Integer.parseInt(rowPosition));
                                         notifyDataSetChanged();
