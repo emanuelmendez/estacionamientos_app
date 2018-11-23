@@ -77,4 +77,5 @@
     <string name="error_no_day_selected">Tenés que seleccionar al menos un día</string>
     <string name="edit_lot_title">Editar lote</string>
     <string name="add_new_lot">Agregar lote</string>
+    <string name="delete_lot">Eliminar lote</string>
 </resources>
